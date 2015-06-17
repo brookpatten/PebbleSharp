@@ -52,6 +52,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\InTheHand.Net.Personal\InTheHand.Net.Personal.FX2.csproj">
+      <Project>{98bdde14-8f8c-40cc-9e45-5bac73573ef4}</Project>
+      <Name>InTheHand.Net.Personal.FX2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.NonPortable.csproj">
       <Project>{e52dcfa6-ed09-4b88-ae50-97072323942c}</Project>
       <Name>PebbleSharp.Core.NonPortable</Name>
