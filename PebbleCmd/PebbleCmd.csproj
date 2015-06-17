@@ -52,9 +52,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PebbleSharp.Core\PebbleSharp.Core.csproj">
-      <Project>{ae0f69ff-97c2-4e55-a3c9-b73e68668dda}</Project>
-      <Name>PebbleSharp.Core</Name>
+    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.NonPortable.csproj">
+      <Project>{e52dcfa6-ed09-4b88-ae50-97072323942c}</Project>
+      <Name>PebbleSharp.Core.NonPortable</Name>
     </ProjectReference>
     <ProjectReference Include="..\PebbleSharp.Net45\PebbleSharp.Net45.csproj">
       <Project>{40bd0369-85e6-4712-a28c-0c9178fd6f33}</Project>

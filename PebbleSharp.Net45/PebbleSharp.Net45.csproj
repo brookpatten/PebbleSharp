@@ -45,14 +45,14 @@
     <Compile Include="Zip.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PebbleSharp.Core\PebbleSharp.Core.csproj">
-      <Project>{AE0F69FF-97C2-4E55-A3C9-B73E68668DDA}</Project>
-      <Name>PebbleSharp.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <Compile Include="PebbleNet45.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.NonPortable.csproj">
+      <Project>{e52dcfa6-ed09-4b88-ae50-97072323942c}</Project>
+      <Name>PebbleSharp.Core.NonPortable</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

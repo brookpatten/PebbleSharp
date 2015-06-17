@@ -1,0 +1,5 @@
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.csprojResolveAssemblyReference.cache
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\bin\Debug\PebbleSharp.Core.NonPortable.dll
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\bin\Debug\PebbleSharp.Core.NonPortable.pdb
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.dll
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.pdb
