@@ -16,39 +16,44 @@ namespace PebbleCmd
     {
         static void Main()
         {
-            ShowPebbles();
-            Console.WriteLine("Enter to exit");
-            Console.ReadLine();
+            ShowPebbles().Wait();
         }
 
         private static async Task ShowPebbles()
         {
-            //check if BlueZ support is enabled
-            Console.WriteLine("Radio Software Manufacturer {0}",BluetoothRadio.PrimaryRadio.SoftwareManufacturer);
-
-
-            Console.WriteLine( "PebbleCmd" );
-            Console.WriteLine( "Select Pebble to connect to:" );
-            var pebbles = PebbleNet45.DetectPebbles();
-            if (pebbles != null && pebbles.Any())
+            try
             {
-                var options = pebbles.Select(x => x.PebbleID).Union(new[] { "Exit" });
-                var menu = new Menu(options.ToArray());
-                var result = menu.ShowMenu();
-                if (result >= 0 && result < pebbles.Count)
+                //check if BlueZ support is enabled
+                Console.WriteLine("Radio Software Manufacturer {0}", BluetoothRadio.PrimaryRadio.SoftwareManufacturer);
+
+
+                Console.WriteLine("PebbleCmd");
+                Console.WriteLine("Select Pebble to connect to:");
+                var pebbles = PebbleNet45.DetectPebbles();
+                if (pebbles != null && pebbles.Any())
                 {
-                    var selectedPebble = pebbles[result];
-                    Console.WriteLine("Connecting to Pebble " + selectedPebble.PebbleID);
-                    await selectedPebble.ConnectAsync();
-                    Console.WriteLine("Connected");
-                    await ShowPebbleMenu(selectedPebble);
+                    var options = pebbles.Select(x => x.PebbleID).Union(new[] { "Exit" });
+                    var menu = new Menu(options.ToArray());
+                    var result = menu.ShowMenu();
+                    if (result >= 0 && result < pebbles.Count)
+                    {
+                        var selectedPebble = pebbles[result];
+                        Console.WriteLine("Connecting to Pebble " + selectedPebble.PebbleID);
+                        await selectedPebble.ConnectAsync();
+                        Console.WriteLine("Connected");
+                        await ShowPebbleMenu(selectedPebble);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No Pebbles Detected");
                 }
             }
-            else
+            catch(Exception ex)
             {
-                Console.WriteLine("No Pebbles Detected");
+                Console.WriteLine(ex.Message + " " + ex.StackTrace);
+                throw;
             }
-            
         }
 
         private static async Task ShowPebbleMenu( Pebble pebble )
