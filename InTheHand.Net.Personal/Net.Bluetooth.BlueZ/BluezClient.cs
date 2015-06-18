@@ -35,12 +35,14 @@ namespace InTheHand.Net.Bluetooth.BlueZ
         internal BluezClient(BluezFactory fcty)
             : base(fcty)
         {
+            Console.WriteLine("1 Param ctor");
             _fcty = fcty;
         }
 
         internal BluezClient(BluezFactory fcty, BluetoothEndPoint localEP)
             : base(fcty, localEP)
         {
+            Console.WriteLine("2 Param ctor");
             _fcty = fcty;
             //TODO _radio = _fcty.GetAdapterWithAddress(localEP.DeviceAddress);
         }
@@ -48,7 +50,21 @@ namespace InTheHand.Net.Bluetooth.BlueZ
         internal BluezClient(BluezFactory fcty, System.Net.Sockets.Socket acceptedSocket)
             : base(fcty, acceptedSocket)
         {
+            Console.WriteLine("3 Param ctor");
             _fcty = fcty;
+        }
+
+        protected override Socket CreateSocket()
+        {
+            Console.WriteLine("Creating Socket using reflection");
+            var type = typeof(Socket);
+            var socket = Activator.CreateInstance(type);
+            //AddressFamily
+            type.GetProperty("AddressFamily").SetValue(socket, BluetoothAddressFamily, null);
+            type.GetProperty("SocketType").SetValue(socket, SocketType.Stream, null);
+            type.GetProperty("ProtocolType").SetValue(socket, BluetoothProtocolType.RFComm, null);
+
+            return (Socket)socket;
         }
 
         protected override AddressFamily BluetoothAddressFamily
