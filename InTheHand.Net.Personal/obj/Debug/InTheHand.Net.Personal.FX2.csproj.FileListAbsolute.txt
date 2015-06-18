@@ -6,3 +6,12 @@ C:\Users\Brook\Desktop\32feet-105180\InTheHand.Net.Personal\InTheHand.Net.Person
 C:\Users\Brook\Desktop\32feet-105180\InTheHand.Net.Personal\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.FX2.csproj.GenerateResource.Cache
 C:\Users\Brook\Desktop\32feet-105180\InTheHand.Net.Personal\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.dll
 C:\Users\Brook\Desktop\32feet-105180\InTheHand.Net.Personal\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.pdb
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\bin\Debug\NDesk.DBus.dll
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\bin\Debug\InTheHand.Net.Personal.dll.config
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\bin\Debug\InTheHand.Net.Personal.dll
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\bin\Debug\InTheHand.Net.Personal.pdb
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.FX2.csprojResolveAssemblyReference.cache
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\obj\Debug\InTheHand.Windows.Forms.SelectBluetoothDeviceForm.resources
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.FX2.csproj.GenerateResource.Cache
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.dll
+C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\InTheHand.Net.Personal\obj\Debug\InTheHand.Net.Personal.pdb
