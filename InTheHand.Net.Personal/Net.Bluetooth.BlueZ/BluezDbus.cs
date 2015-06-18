@@ -229,7 +229,15 @@ namespace InTheHand.Net.Bluetooth.BlueZ
         internal ObjectPath GetDefaultAdapterPath()
         {
             var mgr = FactoryBus.GetObject<BluezDbusInterface.Manager>(Service, ObjectPath.Root);
-            Console.WriteLine("got Manager");
+
+            if (mgr != null)
+            {
+                Console.WriteLine("got Manager");
+            }
+            else
+            {
+                Console.WriteLine("Manager is null for "+Service);
+            }
 #if false
             string pathTmp;
             pathTmp = mgr.DefaultAdapter();

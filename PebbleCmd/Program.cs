@@ -28,16 +28,23 @@ namespace PebbleCmd
             Console.WriteLine( "PebbleCmd" );
             Console.WriteLine( "Select Pebble to connect to:" );
             var pebbles = PebbleNet45.DetectPebbles();
-            var options = pebbles.Select( x => x.PebbleID ).Union( new[] { "Exit" } );
-            var menu = new Menu( options.ToArray() );
-            var result = menu.ShowMenu();
-            if ( result >= 0 && result < pebbles.Count )
+            if (pebbles != null && pebbles.Any())
             {
-                var selectedPebble = pebbles[result];
-                Console.WriteLine( "Connecting to Pebble " + selectedPebble.PebbleID );
-                await selectedPebble.ConnectAsync();
-                Console.WriteLine( "Connected" );
-                await ShowPebbleMenu( selectedPebble );
+                var options = pebbles.Select(x => x.PebbleID).Union(new[] { "Exit" });
+                var menu = new Menu(options.ToArray());
+                var result = menu.ShowMenu();
+                if (result >= 0 && result < pebbles.Count)
+                {
+                    var selectedPebble = pebbles[result];
+                    Console.WriteLine("Connecting to Pebble " + selectedPebble.PebbleID);
+                    await selectedPebble.ConnectAsync();
+                    Console.WriteLine("Connected");
+                    await ShowPebbleMenu(selectedPebble);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No Pebbles Detected");
             }
         }
 
