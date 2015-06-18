@@ -179,6 +179,7 @@ namespace InTheHand.Net.Bluetooth.BlueZ
 
         protected override IBluetoothRadio GetPrimaryRadio()
         {
+            Console.WriteLine("BluezFactory GetPrimaryRadio");
 #if ONE_RADIO
             InitRadios();
             return _primaryRadio;

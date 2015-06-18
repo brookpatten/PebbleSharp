@@ -16,7 +16,9 @@ namespace PebbleCmd
     {
         static void Main()
         {
-            ShowPebbles().Wait();
+            ShowPebbles();
+            Console.WriteLine("Enter to exit");
+            Console.ReadLine();
         }
 
         private static async Task ShowPebbles()
@@ -46,6 +48,7 @@ namespace PebbleCmd
             {
                 Console.WriteLine("No Pebbles Detected");
             }
+            
         }
 
         private static async Task ShowPebbleMenu( Pebble pebble )
