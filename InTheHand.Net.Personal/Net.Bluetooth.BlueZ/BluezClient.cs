@@ -63,7 +63,7 @@ namespace InTheHand.Net.Bluetooth.BlueZ
             type.GetProperty("AddressFamily").SetValue(socket, BluetoothAddressFamily, null);
             type.GetProperty("SocketType").SetValue(socket, SocketType.Stream, null);
             type.GetProperty("ProtocolType").SetValue(socket, BluetoothProtocolType.RFComm, null);
-
+            
             return (Socket)socket;
         }
 
