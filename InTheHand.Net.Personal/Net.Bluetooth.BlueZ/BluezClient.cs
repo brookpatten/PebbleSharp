@@ -54,18 +54,11 @@ namespace InTheHand.Net.Bluetooth.BlueZ
             _fcty = fcty;
         }
 
-        protected override Socket CreateSocket()
-        {
-            Console.WriteLine("Creating Socket using reflection");
-            var type = typeof(Socket);
-            var socket = Activator.CreateInstance(type);
-            //AddressFamily
-            type.GetProperty("AddressFamily").SetValue(socket, BluetoothAddressFamily, null);
-            type.GetProperty("SocketType").SetValue(socket, SocketType.Stream, null);
-            type.GetProperty("ProtocolType").SetValue(socket, BluetoothProtocolType.RFComm, null);
-            
-            return (Socket)socket;
-        }
+        
+        //protected override Socket CreateSocket()
+        //{
+        //    //figure out a clever way of making a socket that bypasses mono's address filter
+        //}
 
         protected override AddressFamily BluetoothAddressFamily
         {
