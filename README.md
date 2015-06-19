@@ -1,7 +1,8 @@
 PebbleSharp
 ===========
 
-A C# library for interacting with the Pebble smart watch
+A C# library for interacting with the Pebble smart watch, 100% stolen and hacked togethor from other open source projects.
+If you're using this for anything real you're crazy, this is a total hack job just to get something working (and make it easy for me to transpot the code from my desktop=>pi and vice versa)
 
 This fork of PebbleSharp is intended specifically for use on mono with the bluez bluetooth stack.
 It is also meant for use on a raspberry pi (ARMHF), but that is *probably* not important, I believe it would work fine on any linux/bluez/mono installation.
