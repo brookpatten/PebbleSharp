@@ -7,9 +7,9 @@ This fork of PebbleSharp is intended specifically for use on mono with the bluez
 It is also meant for use on a raspberry pi (ARMHF), but that is *probably* not important, I believe it would work fine on any linux/bluez/mono installation.
 
 List of debian/rapsbian/ubuntu/whatever-ian packages required (work in progress... it's long)
-bluetooth
-blueman
-mono-complete
+* bluetooth
+* blueman
+* mono-complete
 
 Build is straightfoward xbuild Pebble.sln on mono.
 
