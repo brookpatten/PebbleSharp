@@ -84,10 +84,17 @@ namespace InTheHand.Net.Bluetooth.BlueZ
                 const int WSASERVICE_NOT_FOUND = 10108;
                 throw new SocketException(WSASERVICE_NOT_FOUND);
             }
-            try {
+            try
+            {
                 // Query
                 return DoSdpQuery(session, svcUuid, rfcommOnly);
-            } finally {
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception in DoSdpQuery",ex);
+                throw;
+            }
+            finally {
                 session.Close();
             }
         }
@@ -125,8 +132,8 @@ namespace InTheHand.Net.Bluetooth.BlueZ
                 out pResponseList);
             Console.WriteLine("sdp_service_search_attr_req ret: {0}, result: {1}",
                 ret, pResponseList);
-            BluezUtils.CheckAndThrow(ret, "sdp_service_search_attr_req");
-            //
+            //BluezUtils.CheckAndThrow(ret, "sdp_service_search_attr_req");
+            
             var rList = BuildRecordList(pResponseList);
             return rList;
         }

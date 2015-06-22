@@ -82,6 +82,8 @@ namespace InTheHand.Net.Bluetooth.Factory
                 ref m_arConnect, arConnect, null);
             if (origArConnect != null)
                 throw new InvalidOperationException("Another Connect operation is already in progress.");
+
+            Console.WriteLine("BegingFillInPort");
             BeginFillInPort(rep2, Connect_FillInPortCallback,
                 new BeginConnectState(rep2, arConnect));
             return arConnect;
