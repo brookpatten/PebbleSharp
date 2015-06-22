@@ -58,8 +58,11 @@ namespace PebbleSharp.Net45
                 {
                     _tokenSource = new CancellationTokenSource();
                     _client = new BluetoothClient();
+                    Console.WriteLine("Connecting BluetoothClient");
                     _client.Connect( _deviceInfo.DeviceAddress, BluetoothService.SerialPort );
+                    Console.WriteLine("Getting network stream");
                     _networkStream = _client.GetStream();
+                    Console.WriteLine("Checking for Data");
                     Task.Factory.StartNew( CheckForData, _tokenSource.Token, TaskCreationOptions.LongRunning,
                         TaskScheduler.Default );
                 } );
