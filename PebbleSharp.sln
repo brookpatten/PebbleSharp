@@ -1,11 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PebbleSharp.Net45", "PebbleSharp.Net45\PebbleSharp.Net45.csproj", "{40BD0369-85E6-4712-A28C-0C9178FD6F33}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PebbleSharp.Universal.Shared", "Demo\PebbleSharp.Universal\PebbleSharp.Universal.Shared\PebbleSharp.Universal.Shared.shproj", "{5732948C-77A3-415C-8204-F6647DEC222A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PebbleCmd", "PebbleCmd\PebbleCmd.csproj", "{242D37E6-027D-4F98-AC74-D95A9B03E85D}"
 EndProject
@@ -14,9 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InTheHand.Net.Personal.FX2", "InTheHand.Net.Personal\InTheHand.Net.Personal.FX2.csproj", "{98BDDE14-8F8C-40CC-9E45-5BAC73573EF4}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Demo\PebbleSharp.Universal\PebbleSharp.Universal.Shared\PebbleSharp.Universal.Shared.projitems*{5732948c-77a3-415c-8204-f6647dec222a}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
 		Ad-Hoc|ARM = Ad-Hoc|ARM
@@ -238,5 +231,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Demo\PebbleSharp.Universal\PebbleSharp.Universal.Shared\PebbleSharp.Universal.Shared.projitems*{5732948c-77a3-415c-8204-f6647dec222a}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

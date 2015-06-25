@@ -132,7 +132,7 @@ namespace InTheHand.Net.Bluetooth.BlueZ
                 out pResponseList);
             Console.WriteLine("sdp_service_search_attr_req ret: {0}, result: {1}",
                 ret, pResponseList);
-            //BluezUtils.CheckAndThrow(ret, "sdp_service_search_attr_req");
+            BluezUtils.CheckAndThrow(ret, "sdp_service_search_attr_req");
             
             var rList = BuildRecordList(pResponseList);
             return rList;
