@@ -1,0 +1,7 @@
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/obj/Debug/InTheHand.Windows.Forms.SelectBluetoothDeviceForm.resources
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/bin/Debug/NDesk.DBus.dll
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/bin/Debug/InTheHand.Net.Personal.dll.config
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/bin/Debug/InTheHand.Net.Personal.dll.mdb
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/bin/Debug/InTheHand.Net.Personal.dll
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/obj/Debug/InTheHand.Net.Personal.dll
+/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/obj/Debug/InTheHand.Net.Personal.dll.mdb

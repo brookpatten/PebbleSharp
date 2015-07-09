@@ -74,9 +74,11 @@ namespace InTheHand.Net.Bluetooth
         static ServiceElement GetChannelElement(ServiceRecord record, BluetoothProtocolDescriptorType proto)
         {
             if (!record.Contains(UniversalAttributeId.ProtocolDescriptorList)) {
+				Console.WriteLine ("UniversalAttributeId");
                 goto NotFound;
             }
             ServiceAttribute attr = record.GetAttributeById(UniversalAttributeId.ProtocolDescriptorList);
+
 #if !V1
             bool? isSimpleRfcomm;
 #else
@@ -97,6 +99,7 @@ namespace InTheHand.Net.Bluetooth
 #endif
 )
         {
+			Console.WriteLine ("GetChannelElement");
             if (proto != BluetoothProtocolDescriptorType.L2Cap
                     && proto != BluetoothProtocolDescriptorType.Rfcomm)
                 throw new ArgumentException("Can only fetch RFCOMM or L2CAP element.");
@@ -105,18 +108,21 @@ namespace InTheHand.Net.Bluetooth
             isSimpleRfcomm = true;
             Debug.Assert(attr != null, "attr != null");
             ServiceElement e0 = attr.Value;
+			//Console.WriteLine ("attr.Value=" + attr.Value.GetValueAsString ());
             if (e0.ElementType == ElementType.ElementAlternative) {
 #if ! WinCE
-                Trace.WriteLine("Don't support ElementAlternative ProtocolDescriptorList values.");
+				Console.WriteLine("Don't support ElementAlternative ProtocolDescriptorList values.");
 #endif
                 goto NotFound;
             } else if (e0.ElementType != ElementType.ElementSequence) {
 #if ! WinCE
-                Trace.WriteLine("Bad ProtocolDescriptorList base element.");
+				Console.WriteLine("Bad ProtocolDescriptorList base element.");
 #endif
                 goto NotFound;
             }
             IList_ServiceElement protoStack = e0.GetValueAsElementList();
+			Console.WriteLine ("protoStack count=" + protoStack.Count);
+
             IEnumerator_ServiceElement etor = protoStack.GetEnumerator();
             ServiceElement layer;
             IList_ServiceElement layerContent;
@@ -124,7 +130,7 @@ namespace InTheHand.Net.Bluetooth
             // -- L2CAP Layer --
             if (!etor.MoveNext()) {
 #if ! WinCE
-                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture,
+				Console.WriteLine(string.Format(CultureInfo.InvariantCulture,
                     "Protocol stack truncated before {0}.", "L2CAP"));
 #endif
                 goto NotFound;
@@ -133,7 +139,7 @@ namespace InTheHand.Net.Bluetooth
             layerContent = layer.GetValueAsElementList();
             if (((ServiceElement)layerContent[0]).GetValueAsUuid() != BluetoothService.L2CapProtocol) {
 #if ! WinCE
-                Trace.WriteLine(String.Format(CultureInfo.InvariantCulture,
+				Console.WriteLine(String.Format(CultureInfo.InvariantCulture,
                     "Bad protocol stack, layer {0} is not {1}.", 1, "L2CAP"));
 #endif
                 goto NotFound;
@@ -144,7 +150,7 @@ namespace InTheHand.Net.Bluetooth
             if (proto == BluetoothProtocolDescriptorType.L2Cap) {
                 if (layerContent.Count < 2) {
 #if ! WinCE
-                    Trace.WriteLine("L2CAP PSM element was requested but the L2CAP layer in this case hasn't a second element.");
+					Console.WriteLine("L2CAP PSM element was requested but the L2CAP layer in this case hasn't a second element.");
 #endif
                     goto NotFound;
                 }
@@ -155,7 +161,7 @@ namespace InTheHand.Net.Bluetooth
             // -- RFCOMM Layer --
             if (!etor.MoveNext()) {
 #if ! WinCE
-                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture,
+				Console.WriteLine(string.Format(CultureInfo.InvariantCulture,
                     "Protocol stack truncated before {0}.", "RFCOMM"));
 #endif
                 goto NotFound;
@@ -164,7 +170,7 @@ namespace InTheHand.Net.Bluetooth
             layerContent = layer.GetValueAsElementList();
             if (((ServiceElement)layerContent[0]).GetValueAsUuid() != BluetoothService.RFCommProtocol) {
 #if ! WinCE
-                Trace.WriteLine(String.Format(CultureInfo.InvariantCulture,
+                Console.WriteLine(String.Format(CultureInfo.InvariantCulture,
                     "Bad protocol stack, layer {0} is not {1}.", 2, "RFCOMM"));
 #endif
                 goto NotFound;
@@ -172,7 +178,7 @@ namespace InTheHand.Net.Bluetooth
             //
             if (layerContent.Count < 2) {
 #if ! WinCE
-                Trace.WriteLine(String.Format(CultureInfo.InvariantCulture,
+				Console.WriteLine(String.Format(CultureInfo.InvariantCulture,
                     "Bad protocol stack, layer {0} hasn't a second element.", 2));
 #endif
                 goto NotFound;
@@ -180,7 +186,7 @@ namespace InTheHand.Net.Bluetooth
             channelElement = (ServiceElement)layerContent[1];
             if (channelElement.ElementType != ElementType.UInt8) {
 #if ! WinCE
-                Trace.WriteLine(String.Format(CultureInfo.InvariantCulture,
+				Console.WriteLine(String.Format(CultureInfo.InvariantCulture,
                     "Bad protocol stack, layer {0} is not UInt8.", 2));
 #endif
                 goto NotFound;
@@ -213,8 +219,10 @@ namespace InTheHand.Net.Bluetooth
         /// </returns>
         public static Int32 GetRfcommChannelNumber(ServiceRecord record)
         {
+			Console.WriteLine ("GetRfcommChannelNumber");
             ServiceElement channelElement = GetRfcommChannelElement(record);
             if (channelElement == null) {
+				Console.WriteLine ("GetRfcommChannelElement returned null");
                 return -1;
             }
             return GetRfcommChannelNumber(channelElement);

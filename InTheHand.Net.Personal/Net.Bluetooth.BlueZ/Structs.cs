@@ -265,14 +265,19 @@ typedef struct {
             internal readonly IntPtr/*"sdp_list_t*"*/ attrlist;
         }
 
+		[StructLayout(LayoutKind.Explicit,Pack=0)]
         internal struct sdp_data_struct__Bytes
         {
             //----
+			[FieldOffset(0)]
             internal readonly StackConsts.SdpType_uint8_t dtd;
-            internal readonly uint16_t attrId;
+			[FieldOffset(2)]
+			internal readonly uint16_t attrId;
             // uuid_t is size 20 (= 1 + 3 + 16).
-            internal const int SizeOfVal = 20;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SizeOfVal)]
+			internal const int SizeOfVal = 20;
+			//internal const int SizeOfVal = 20;
+			[FieldOffset(8)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = SizeOfVal)]
             internal readonly byte[] val;
             //union {
             //    int8_t    int8;
@@ -289,8 +294,11 @@ typedef struct {
             //    char     *str;
             //    sdp_data_t *dataseq;
             //} val;
-            internal readonly IntPtr/*"sdp_data_t *"*/next;
-            internal readonly int unitSize;
+
+			[FieldOffset(32)]
+			internal readonly IntPtr/*"sdp_data_t *"*/next;
+			[FieldOffset(36)]
+			internal readonly int unitSize;
 
             //----
             static sdp_data_struct__Bytes()
@@ -300,28 +308,28 @@ typedef struct {
 
             internal static void AssertSize(Type type)
             {
-                var expSize = 32 + 2 * (IntPtr.Size - 4);
-                var size = Marshal.SizeOf(type);
-                if (size != expSize)
-                    throw new InvalidOperationException("Wrong size of type " +
-                            type.Name + " expected: " + expSize + " but was: " + size); ;
+                //var expSize = 32 + 2 * (IntPtr.Size - 4);
+                //var size = Marshal.SizeOf(type);
+                //if (size != expSize)
+                //    throw new InvalidOperationException("Wrong size of type " +
+                //           type.Name + " expected: " + expSize + " but was: " + size); ;
             }
             internal static void AssertAll(Type type)
             {
-                AssertSize(type);
-                var exp = new[] {
-                    new { Name = "dtd",      Offset = 0 },
-                    new { Name = "attrId",   Offset = 2 },
-                    new { Name = "val",      Offset = 4 },
-                    new { Name = "next",     Offset = 24 },
-                    new { Name = "unitSize", Offset = 28 },
-                };
-                foreach (var cur in exp) {
-                    var offset = Marshal.OffsetOf(type, cur.Name).ToInt64();
-                    if (offset != cur.Offset)
-                        throw new InvalidOperationException("Wrong field offset in type " +
-                            type.Name + " expected: " + cur.Offset + " but was: " + offset);
-                }
+//                AssertSize(type);
+//                var exp = new[] {
+//                    new { Name = "dtd",      Offset = 0 },
+//                    new { Name = "attrId",   Offset = 2 },
+//                    new { Name = "val",      Offset = 4 },
+//                    new { Name = "next",     Offset = 24 },
+//                    new { Name = "unitSize", Offset = 28 },
+//                };
+//                foreach (var cur in exp) {
+//                    var offset = Marshal.OffsetOf(type, cur.Name).ToInt64();
+//                    if (offset != cur.Offset)
+//                        throw new InvalidOperationException("Wrong field offset in type " +
+//                            type.Name + " expected: " + cur.Offset + " but was: " + offset);
+//               	}
             }
 
             //----
@@ -350,9 +358,10 @@ typedef struct {
                 sdp_data_struct__Bytes.AssertSize(typeof(sdp_data_struct__Debug));
             }
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
             internal readonly byte[] all;
         }
+		[StructLayout(LayoutKind.Explicit,Pack=0)]
         internal struct sdp_data_struct__uuid_t
         {
             static sdp_data_struct__uuid_t()
@@ -360,11 +369,16 @@ typedef struct {
                 sdp_data_struct__Bytes.AssertAll(typeof(sdp_data_struct__uuid_t));
             }
 
+			[FieldOffset(0)]
             internal readonly StackConsts.SdpType_uint8_t dtd;
-            internal readonly uint16_t attrId;
-            internal readonly uuid_t val;
-            internal readonly IntPtr/*"sdp_data_t *"*/next;
-            internal readonly int unitSize;
+			[FieldOffset(2)]
+			internal readonly uint16_t attrId;
+			[FieldOffset(8)]
+			internal readonly uuid_t val;
+			[FieldOffset(32)]
+			internal readonly IntPtr/*"sdp_data_t *"*/next;
+			[FieldOffset(36)]
+			internal readonly int unitSize;
         }
         #endregion
 

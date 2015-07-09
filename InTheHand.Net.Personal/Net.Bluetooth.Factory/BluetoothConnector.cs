@@ -116,11 +116,14 @@ namespace InTheHand.Net.Bluetooth.Factory
             AsyncResultNoResult arConnect = bcState.arCliConnect;
             try {
                 BluetoothEndPoint remoteEpWithPort = EndFillInPort(ar);
+				Console.WriteLine("EndFillInPort Completed");
                 if (arConnect.IsCompleted) {
+					
                     // User called Close/Dispose when we were in (slow!) SDP lookup.
                     Debug.Assert(m_disposed, "arConnect.IsCompleted but NOT m_cancelled");
                     return;
                 }
+
                 _remotePort = remoteEpWithPort.Port;
                 Debug.Assert(_remotePort != -1 && _remotePort != 0, "port is 'empty' is: " + _remotePort);
                 ConnBeginConnect(remoteEpWithPort, Connect_ConnCallback, bcState);
@@ -195,9 +198,12 @@ namespace InTheHand.Net.Bluetooth.Factory
 
         internal static List<int> ListAllRfcommPortsInRecords(List<ServiceRecord> list)
         {
+			Console.WriteLine ("ListAllRfCommPortsInRecords received " + list.Count + " records");
             var portList = new List<int>();
             foreach (var curSR in list) {
+				Console.WriteLine ("Looking for port");
                 int possiblePort = ServiceRecordHelper.GetRfcommChannelNumber(curSR);
+				Console.WriteLine ("Possible port:" + possiblePort);
                 portList.Add(possiblePort);
             }//for
             return portList;
@@ -221,22 +227,27 @@ namespace InTheHand.Net.Bluetooth.Factory
             try {
                 var portList = _parent.EndServiceDiscovery(ar);
                 if (portList.Count == 0) {
+					Console.WriteLine("DoEndServiceDiscovery, zero records!");
                     MiscUtils.Trace_WriteLine("DoEndServiceDiscovery, zero records!");
                     arFipToBeSACd.SetAsCompleted(CommonSocketExceptions.Create_NoResultCode(
                             CommonSocketExceptions.SocketError_NoSuchService, "PortLookup_Zero"),
                         false);
                 } else {
+					Console.WriteLine("DoEndServiceDiscovery, got {0} records.", portList.Count);
                     MiscUtils.Trace_WriteLine("DoEndServiceDiscovery, got {0} records.", portList.Count);
                     Debug.Assert(portList.Count >= 1, "NOT portList.Count>=1, is: " + portList.Count);
                     foreach (var cur in portList) {
+						Console.WriteLine("cur="+cur);
                         if (cur != -1) {
+							Console.WriteLine("FillInPort_ServiceDiscoveryCallback, got port: {0}", cur);
                             MiscUtils.Trace_WriteLine("FillInPort_ServiceDiscoveryCallback, got port: {0}", cur);
                             BluetoothEndPoint epWithPort = new BluetoothEndPoint(
-                                inputEP.Address, inputEP.Service, cur);
+                                inputEP.Address, inputEP.Service, cur);//hardcode to 1 to avoid sdp nonsense
                             arFipToBeSACd.SetAsCompleted(epWithPort, false);
                             return;
                         }
                     }//for
+					Console.WriteLine("FillInPort_ServiceDiscoveryCallback, no scn found");
                     MiscUtils.Trace_WriteLine("FillInPort_ServiceDiscoveryCallback, no scn found");
                     // -> Error. No Rfcomm SCN!
                     arFipToBeSACd.SetAsCompleted(CommonSocketExceptions.Create_NoResultCode(
