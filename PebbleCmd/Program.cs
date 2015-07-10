@@ -1,11 +1,13 @@
 ﻿
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PebbleSharp.Core;
 using PebbleSharp.Core.Responses;
 using PebbleSharp.Net45;
 using InTheHand.Net.Bluetooth;
+using PebbleSharp.Core.Bundles;
 
 namespace PebbleCmd
 {
@@ -64,7 +66,9 @@ namespace PebbleCmd
                 "Set Current Time",
                 "Get Firmware Info",
                 "Send Ping",
-                "Media Commands" );
+                "Media Commands",
+                "Install App",
+                "Send App Message");
             while ( true )
             {
                 switch ( menu.ShowMenu() )
@@ -91,6 +95,27 @@ namespace PebbleCmd
                         break;
                     case 5:
                         ShowMediaCommands( pebble );
+                        break;
+                    case 6:
+                        var progress = new Progress<ProgressValue>(pv=>Console.WriteLine(pv.ProgressPercentage+" "+pv.Message));
+
+                        //22a27b9a-0b07-47af-ad87-b2c29305bab6
+                        using (var stream = new FileStream("../../../AppMessageTest.pbw", FileMode.Open))
+                        {
+                            using (var zip = new Zip())
+                            {
+                                zip.Open(stream);
+                                var bundle = new AppBundle();
+                                bundle.Load(stream,zip);
+                                var task = pebble.InstallAppAsync(bundle, progress);
+                                await task;
+                                Console.WriteLine("App Installed");
+                            }
+                        }
+                        break;
+                    case 7:
+                        Console.WriteLine("Sending AppMessage to 22a27b9a-0b07-47af-ad87-b2c29305bab6");
+
                         break;
                 }
             }
