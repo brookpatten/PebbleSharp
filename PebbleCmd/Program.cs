@@ -16,13 +16,14 @@ namespace PebbleCmd
     /// </summary>
     class Program
     {
-        static void Main()
-        {
-            ShowPebbles().Wait();
-        }
+        //static void Main()
+        //{
+            //ShowPebbles().Wait();
+        //}
 
-        private static async Task ShowPebbles()
-        {
+        //private static async Task ShowPebbles()
+		static void Main()
+		{
             try
             {
                 //check if BlueZ support is enabled
@@ -34,16 +35,22 @@ namespace PebbleCmd
                 var pebbles = PebbleNet45.DetectPebbles();
                 if (pebbles != null && pebbles.Any())
                 {
-                    var options = pebbles.Select(x => x.PebbleID).Union(new[] { "Exit" });
-                    var menu = new Menu(options.ToArray());
-                    var result = menu.ShowMenu();
+					int result =0;
+
+					if(pebbles.Count>1)
+					{
+                    	var options = pebbles.Select(x => x.PebbleID).Union(new[] { "Exit" });
+                    	var menu = new Menu(options.ToArray());
+                    	result = menu.ShowMenu();
+					}
+
                     if (result >= 0 && result < pebbles.Count)
                     {
                         var selectedPebble = pebbles[result];
                         Console.WriteLine("Connecting to Pebble " + selectedPebble.PebbleID);
-                        await selectedPebble.ConnectAsync();
+						selectedPebble.ConnectAsync().Wait();
                         Console.WriteLine("Connected");
-                        await ShowPebbleMenu(selectedPebble);
+						ShowPebbleMenu(selectedPebble).Wait();
                     }
                 }
                 else
@@ -53,7 +60,8 @@ namespace PebbleCmd
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message + " " + ex.StackTrace);
+
+				Console.WriteLine(ex.Message + " " + ex.StackTrace);
                 throw;
             }
         }

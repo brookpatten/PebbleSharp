@@ -145,7 +145,6 @@ namespace InTheHand.Net.Bluetooth.BlueZ
         {
             a = GetDefaultAdapter();
             var addrStrIn = FromBluetoothAddress(address);
-            Console.WriteLine("gonna FindDevice");
             ObjectPath devicePath;
             try {
                 devicePath = a.FindDevice(addrStrIn);
@@ -161,7 +160,6 @@ namespace InTheHand.Net.Bluetooth.BlueZ
                 }
             }
             objectPath = devicePath;
-            Console.WriteLine("gonna Get {0}", devicePath);
             var d = FactoryBus.GetObject<BluezDbusInterface.Device>(Service, devicePath);
             return d;
         }
@@ -263,7 +261,6 @@ namespace InTheHand.Net.Bluetooth.BlueZ
             BluetoothAddress localAddress, out ObjectPath objectPath)
         {
             var mgr = FactoryBus.GetObject<BluezDbusInterface.Manager>(Service, ObjectPath.Root);
-            Console.WriteLine("got Manager");
             ObjectPath adapterPath = mgr.FindAdapter(FromBluetoothAddress(localAddress));
             objectPath = adapterPath;
             return GetAdapter(adapterPath);
@@ -272,7 +269,6 @@ namespace InTheHand.Net.Bluetooth.BlueZ
         internal BluezDbusInterface.Adapter GetAdapter(ObjectPath adapterPath)
         {
             var a = FactoryBus.GetObject<BluezDbusInterface.Adapter>(Service, adapterPath);
-            Console.WriteLine("got Adapter");
             return a;
         }
 

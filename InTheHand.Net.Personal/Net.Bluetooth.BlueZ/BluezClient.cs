@@ -233,7 +233,17 @@ namespace InTheHand.Net.Bluetooth.BlueZ
                 throw new InvalidOperationException("Begin not called.");
             }
             var records = _sdpQuery.EndQuery(ar);
+
+			foreach (var record in records) {
+				Console.WriteLine ("Service Record:" + record.ToString());
+			}
+
             var ports = BluetoothConnector.ListAllRfcommPortsInRecords(records);
+
+			foreach (var port in ports) {
+				Console.WriteLine ("Port:" + port);
+			}
+
             return ports;
         }
 

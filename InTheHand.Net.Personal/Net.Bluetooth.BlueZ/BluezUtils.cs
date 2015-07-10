@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Net.Sockets;
 using System.Linq;
+using System.ComponentModel;
 
 namespace InTheHand.Net.Bluetooth.BlueZ
 {
@@ -36,7 +37,10 @@ namespace InTheHand.Net.Bluetooth.BlueZ
         {
             if (ret >= 0)
                 return;
-            Throw(ret, descr);
+			var ex = new Win32Exception (Marshal.GetLastWin32Error());
+			Console.WriteLine ("BluezUtils.CheckAndThrow:" + ex.Message);
+			throw ex;
+			//Throw(ret, descr);
         }
 
         [DebuggerNonUserCode]
