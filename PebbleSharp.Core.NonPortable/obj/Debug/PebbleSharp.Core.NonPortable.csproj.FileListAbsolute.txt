@@ -3,3 +3,7 @@ C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortabl
 C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\bin\Debug\PebbleSharp.Core.NonPortable.pdb
 C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.dll
 C:\Users\Brook\Desktop\pebblesharp-brook\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.pdb
+Z:\Development\PebbleSharp\PebbleSharp.Core.NonPortable\bin\Debug\PebbleSharp.Core.NonPortable.dll
+Z:\Development\PebbleSharp\PebbleSharp.Core.NonPortable\bin\Debug\PebbleSharp.Core.NonPortable.pdb
+Z:\Development\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.dll
+Z:\Development\PebbleSharp\PebbleSharp.Core.NonPortable\obj\Debug\PebbleSharp.Core.NonPortable.pdb

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using PebbleSharp.Core.Bundles;
+using PebbleSharp.Core.NonPortable.AppMessage;
 using PebbleSharp.Core.Responses;
 
 namespace PebbleSharp.Core
@@ -451,9 +453,26 @@ namespace PebbleSharp.Core
             }
         }
 
+        public async Task<ApplicationMessageResponse> SendApplicationMessage(UUID applicationid,AppMessageDictionary data)
+        {
+            return await SendMessageAsync<ApplicationMessageResponse>(Endpoint.ApplicationMessage, data.GetBytes(0,applicationid));
+        }
+
         private void OnApplicationMessageReceived( ApplicationMessageResponse response )
         {
             SendMessageNoResponseAsync( Endpoint.ApplicationMessage, new byte[] { 0xFF, response.TID } );
+
+            Console.WriteLine("Received Application Message for app " + response.TargetUUID);
+            if (response.Payload != null)
+            {
+                StringBuilder payloadDebugger = new StringBuilder();
+                foreach (var b in response.Payload)
+                {
+                    payloadDebugger.Append(string.Format("{0}:", b));
+                }
+                
+                Console.WriteLine(payloadDebugger.ToString());
+            }
         }
 
         public override string ToString()

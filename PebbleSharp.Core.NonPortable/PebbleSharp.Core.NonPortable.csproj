@@ -44,6 +44,7 @@
     <Compile Include="AppBank.cs" />
     <Compile Include="ApplicationManifest.cs" />
     <Compile Include="ApplicationMetadata.cs" />
+    <Compile Include="AppMessage\AppMessageDictionary.cs" />
     <Compile Include="BundleManifest.cs" />
     <Compile Include="Bundles\AppBundle.cs" />
     <Compile Include="Bundles\BundleBase.cs" />

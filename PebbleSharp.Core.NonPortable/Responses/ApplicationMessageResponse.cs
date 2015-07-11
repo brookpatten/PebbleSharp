@@ -25,8 +25,16 @@ namespace PebbleSharp.Core.Responses
             get { return _Tid; }
         }
 
+        private byte[] _payload;
+
+        public byte[] Payload
+        {
+            get { return _payload; }
+        }
+
         protected override void Load( byte[] payload )
         {
+            _payload = payload;
             var data = payload;
 
             byte command;

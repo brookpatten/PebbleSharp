@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using PebbleSharp.Core.Responses;
 using PebbleSharp.Net45;
 using InTheHand.Net.Bluetooth;
 using PebbleSharp.Core.Bundles;
+using PebbleSharp.Core.NonPortable.AppMessage;
 
 namespace PebbleCmd
 {
@@ -68,6 +70,7 @@ namespace PebbleCmd
 
         private static async Task ShowPebbleMenu( Pebble pebble )
         {
+            //string uuid = "22a27b9a-0b07-47af-ad87-b2c29305bab6";
             var menu = new Menu(
                 "Disconnect",
                 "Get Time",
@@ -79,42 +82,44 @@ namespace PebbleCmd
                 "Send App Message");
             while ( true )
             {
-                switch ( menu.ShowMenu() )
+                switch (menu.ShowMenu())
                 {
                     case 0:
                         pebble.Disconnect();
                         return;
                     case 1:
                         var timeResult = await pebble.GetTimeAsync();
-                        DisplayResult( timeResult, x => string.Format( "Pebble Time: " + x.Time.ToString( "G" ) ) );
+                        DisplayResult(timeResult, x => string.Format("Pebble Time: " + x.Time.ToString("G")));
                         break;
                     case 2:
-                        await pebble.SetTimeAsync( DateTime.Now );
+                        await pebble.SetTimeAsync(DateTime.Now);
                         goto case 1;
                     case 3:
                         var firmwareResult = await pebble.GetFirmwareVersionAsync();
-                        DisplayResult( firmwareResult,
-                            x => string.Join( Environment.NewLine, "Firmware", x.Firmware.ToString(),
-                                "Recovery Firmware", x.RecoveryFirmware.ToString() ) );
+                        DisplayResult(firmwareResult,
+                            x => string.Join(Environment.NewLine, "Firmware", x.Firmware.ToString(),
+                                "Recovery Firmware", x.RecoveryFirmware.ToString()));
                         break;
                     case 4:
                         var pingResult = await pebble.PingAsync();
-                        DisplayResult( pingResult, x => "Received Ping Response" );
+                        DisplayResult(pingResult, x => "Received Ping Response");
                         break;
                     case 5:
-                        ShowMediaCommands( pebble );
+                        ShowMediaCommands(pebble);
                         break;
                     case 6:
-                        var progress = new Progress<ProgressValue>(pv=>Console.WriteLine(pv.ProgressPercentage+" "+pv.Message));
+                        var progress =
+                            new Progress<ProgressValue>(
+                                pv => Console.WriteLine(pv.ProgressPercentage + " " + pv.Message));
 
-                        //22a27b9a-0b07-47af-ad87-b2c29305bab6
+
                         using (var stream = new FileStream("../../../AppMessageTest.pbw", FileMode.Open))
                         {
                             using (var zip = new Zip())
                             {
                                 zip.Open(stream);
                                 var bundle = new AppBundle();
-                                bundle.Load(stream,zip);
+                                bundle.Load(stream, zip);
                                 var task = pebble.InstallAppAsync(bundle, progress);
                                 await task;
                                 Console.WriteLine("App Installed");
@@ -122,11 +127,38 @@ namespace PebbleCmd
                         }
                         break;
                     case 7:
-                        Console.WriteLine("Sending AppMessage to 22a27b9a-0b07-47af-ad87-b2c29305bab6");
+                        //read the uuid from the pbw
+                        UUID uuid=null;
+                        using (var stream = new FileStream("../../../AppMessageTest.pbw", FileMode.Open))
+                        {
+                            using (var zip = new Zip())
+                            {
+                                zip.Open(stream);
+                                var bundle = new AppBundle();
+                                bundle.Load(stream, zip);
+                                uuid = bundle.AppMetadata.UUID;
+                            }
+                        }
 
+                        //format a message
+                        AppMessageDictionary message = new AppMessageDictionary();
+                        message.Values.Add(new AppMessageUInt32(){Value = (uint)new Random().Next()});
+
+                        //send it
+                        var t = pebble.SendApplicationMessage(uuid, message);
+                        await t;
+                        Console.WriteLine("Response received");
                         break;
                 }
             }
+        }
+
+        public static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
         }
 
         private static void ShowMediaCommands( Pebble pebble )
