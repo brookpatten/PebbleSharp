@@ -68,9 +68,36 @@ namespace PebbleCmd
             }
         }
 
+        private static string SelectApp()
+        {
+            string appPath = "../../../";
+            DirectoryInfo di = new DirectoryInfo(appPath);
+            var files = di.GetFiles("*.pbw");
+
+            if (files.Any())
+            {
+                if (files.Count() == 1)
+                {
+                    return files.Single().FullName;
+                }
+                else
+                {
+                    var fileMenu = new Menu(files.Select(x => x.Name).ToArray());
+                    int index = fileMenu.ShowMenu();
+                    return files[index].FullName;
+                }
+            }
+            else
+            {
+                Console.WriteLine("No .pbw files found");
+                return null;
+            }
+        }
+
         private static async Task ShowPebbleMenu( Pebble pebble )
         {
             //string uuid = "22a27b9a-0b07-47af-ad87-b2c29305bab6";
+            
             var menu = new Menu(
                 "Disconnect",
                 "Get Time",
@@ -112,54 +139,75 @@ namespace PebbleCmd
                             new Progress<ProgressValue>(
                                 pv => Console.WriteLine(pv.ProgressPercentage + " " + pv.Message));
 
+                        string appPath = SelectApp();
 
-                        using (var stream = new FileStream("../../../AppMessageTest.pbw", FileMode.Open))
+                        if (!string.IsNullOrEmpty(appPath) && File.Exists(appPath))
                         {
-                            using (var zip = new Zip())
+                            using (var stream = new FileStream(appPath, FileMode.Open))
                             {
-                                zip.Open(stream);
-                                var bundle = new AppBundle();
-                                bundle.Load(stream, zip);
-                                var task = pebble.InstallAppAsync(bundle, progress);
-                                await task;
-                                Console.WriteLine("App Installed");
+                                using (var zip = new Zip())
+                                {
+                                    zip.Open(stream);
+                                    var bundle = new AppBundle();
+                                    stream.Position = 0;
+                                    bundle.Load(stream, zip);
+                                    var task = pebble.InstallAppAsync(bundle, progress);
+                                    await task;
+                                    Console.WriteLine("App Installed");
+                                }
                             }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No .pbw");
                         }
                         break;
                     case 7:
                         //read the uuid from the pbw
-                        UUID uuid=null;
-                        using (var stream = new FileStream("../../../AppMessageTest.pbw", FileMode.Open))
+
+                        string uuidAppPath = SelectApp();
+
+                        if (!string.IsNullOrEmpty(uuidAppPath) && File.Exists(uuidAppPath))
                         {
-                            using (var zip = new Zip())
+
+
+                            UUID uuid = new UUID("22a27b9a-0b07-47af-ad87-b2c29305bab6") ;
+                            using (var stream = new FileStream(uuidAppPath, FileMode.Open))
                             {
-                                zip.Open(stream);
-                                var bundle = new AppBundle();
-                                bundle.Load(stream, zip);
-                                uuid = bundle.AppMetadata.UUID;
+                                using (var zip = new Zip())
+                                {
+                                    zip.Open(stream);
+                                    var bundle = new AppBundle();
+                                    stream.Position = 0;
+                                    bundle.Load(stream, zip);
+                                    uuid = bundle.AppMetadata.UUID;
+                                }
                             }
+
+
+
+                            //format a message
+                            var rand = new Random().Next();
+                            AppMessageDictionary message = new AppMessageDictionary();
+                            message.Values.Add(new AppMessageUInt32() { Value = (uint)rand });
+
+
+                            //send it
+                            Console.WriteLine("Sending Status "+rand+" to " + uuid.ToString());
+                            var t = pebble.SendApplicationMessage(uuid, message);
+                            await t;
+                            Console.WriteLine("Response received");
                         }
-
-                        //format a message
-                        AppMessageDictionary message = new AppMessageDictionary();
-                        message.Values.Add(new AppMessageUInt32(){Value = (uint)new Random().Next()});
-
-                        //send it
-                        var t = pebble.SendApplicationMessage(uuid, message);
-                        await t;
-                        Console.WriteLine("Response received");
+                        else
+                        {
+                            Console.WriteLine("No .pbw");
+                        }
                         break;
                 }
             }
         }
 
-        public static byte[] StringToByteArray(string hex)
-        {
-            return Enumerable.Range(0, hex.Length)
-                             .Where(x => x % 2 == 0)
-                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                             .ToArray();
-        }
+        
 
         private static void ShowMediaCommands( Pebble pebble )
         {

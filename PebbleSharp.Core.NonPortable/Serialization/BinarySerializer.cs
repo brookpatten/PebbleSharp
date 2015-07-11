@@ -54,5 +54,7 @@ namespace PebbleSharp.Core.Serialization
             }
             return (T) rv;
         }
+
+        
     }
 }

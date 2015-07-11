@@ -11,6 +11,8 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
 
     public class AppMessageDictionary
     {
+        //TODO: the key names are in the manifest.... do we need them for anything?
+
         //byte layout is as follows
         //command (always 1?) byte
         //transactionid       byte
@@ -21,6 +23,26 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
         //  t                 byte      type 
         //  l                 ushort    length
 
+        //1:250:34:162:123:154:11:7:71:175:173:135:178:194:147:5:186:182:1:0:0:0:0:2:1:0:1
+        //sample message
+        //1:        command
+        //250:      transaction id
+        //34:162:123:154:11:7:71:175:173:135:178:194:147:5:186:182: //uuid
+        //1:    //tuple count
+        //0:0:0:0: //first tuple, key
+        //2:        //type
+        //1:0:      //length
+        //1         //value
+
+        //sample outbound message
+        //1:
+        //0:
+        //11:7:71:175:173:135:178:194:147:5:186:182:255:255:255:255:
+        //1:
+        //0:0:0:0:
+        //2:
+        //4:0:
+        //87:195:209:30:
 
         public const byte COMMAND = 1;
 

@@ -455,7 +455,8 @@ namespace PebbleSharp.Core
 
         public async Task<ApplicationMessageResponse> SendApplicationMessage(UUID applicationid,AppMessageDictionary data)
         {
-            return await SendMessageAsync<ApplicationMessageResponse>(Endpoint.ApplicationMessage, data.GetBytes(0,applicationid));
+            DebugMessage(data.GetBytes(255,applicationid));
+            return await SendMessageAsync<ApplicationMessageResponse>(Endpoint.ApplicationMessage, data.GetBytes(255,applicationid));
         }
 
         private void OnApplicationMessageReceived( ApplicationMessageResponse response )
@@ -465,14 +466,19 @@ namespace PebbleSharp.Core
             Console.WriteLine("Received Application Message for app " + response.TargetUUID);
             if (response.Payload != null)
             {
-                StringBuilder payloadDebugger = new StringBuilder();
-                foreach (var b in response.Payload)
-                {
-                    payloadDebugger.Append(string.Format("{0}:", b));
-                }
-                
-                Console.WriteLine(payloadDebugger.ToString());
+                DebugMessage(response.Payload);
             }
+        }
+
+        private void DebugMessage(byte[] bytes)
+        {
+            StringBuilder payloadDebugger = new StringBuilder();
+            foreach (var b in bytes)
+            {
+                payloadDebugger.Append(string.Format("{0}:", b));
+            }
+
+            Console.WriteLine(payloadDebugger.ToString());
         }
 
         public override string ToString()
