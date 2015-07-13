@@ -453,20 +453,23 @@ namespace PebbleSharp.Core
             }
         }
 
-        public async Task<ApplicationMessageResponse> SendApplicationMessage(UUID applicationid,AppMessageDictionary data)
+        public async Task<ApplicationMessageResponse> SendApplicationMessage(AppMessageDictionary data)
         {
-            DebugMessage(data.GetBytes(255,applicationid));
-            return await SendMessageAsync<ApplicationMessageResponse>(Endpoint.ApplicationMessage, data.GetBytes(255,applicationid));
+            DebugMessage(data.GetBytes());
+            return await SendMessageAsync<ApplicationMessageResponse>(Endpoint.ApplicationMessage, data.GetBytes());
         }
 
         private void OnApplicationMessageReceived( ApplicationMessageResponse response )
         {
-            SendMessageNoResponseAsync( Endpoint.ApplicationMessage, new byte[] { 0xFF, response.TID } );
+            SendMessageNoResponseAsync( Endpoint.ApplicationMessage, new byte[] { 0xFF, response.Dictionary.TransactionId } );
 
-            Console.WriteLine("Received Application Message for app " + response.TargetUUID);
-            if (response.Payload != null)
+            Console.WriteLine("Received Application Message for app " + response.Dictionary.ApplicationId);
+            if (response.Dictionary != null)
             {
-                DebugMessage(response.Payload);
+                foreach (var k in response.Dictionary.Values)
+                {
+                    Console.WriteLine(k.Key+","+k.ToString());
+                }
             }
         }
 

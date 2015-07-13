@@ -172,17 +172,17 @@ namespace PebbleCmd
 
 
                             UUID uuid = new UUID("22a27b9a-0b07-47af-ad87-b2c29305bab6") ;
-                            using (var stream = new FileStream(uuidAppPath, FileMode.Open))
-                            {
-                                using (var zip = new Zip())
-                                {
-                                    zip.Open(stream);
-                                    var bundle = new AppBundle();
-                                    stream.Position = 0;
-                                    bundle.Load(stream, zip);
-                                    uuid = bundle.AppMetadata.UUID;
-                                }
-                            }
+                            //using (var stream = new FileStream(uuidAppPath, FileMode.Open))
+                            //{
+                            //    using (var zip = new Zip())
+                            //    {
+                            //        zip.Open(stream);
+                            //        var bundle = new AppBundle();
+                            //        stream.Position = 0;
+                            //        bundle.Load(stream, zip);
+                            //        uuid = bundle.AppMetadata.UUID;
+                            //    }
+                            //}
 
 
 
@@ -190,11 +190,14 @@ namespace PebbleCmd
                             var rand = new Random().Next();
                             AppMessageDictionary message = new AppMessageDictionary();
                             message.Values.Add(new AppMessageUInt32() { Value = (uint)rand });
+                            message.Values.Add(new AppMessageString() { Value = "Hello from .net" });
+                            message.ApplicationId = uuid;
+                            message.TransactionId = 255;
 
 
                             //send it
                             Console.WriteLine("Sending Status "+rand+" to " + uuid.ToString());
-                            var t = pebble.SendApplicationMessage(uuid, message);
+                            var t = pebble.SendApplicationMessage(message);
                             await t;
                             Console.WriteLine("Response received");
                         }

@@ -44,23 +44,117 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
         //4:0:
         //87:195:209:30:
 
-        public const byte COMMAND = 1;
+        public const byte COMMAND = 1;//unsure of what this does atm
+
+        public byte TransactionId { get; set; }
+        public UUID ApplicationId { get; set; }
 
         public AppMessageDictionary()
         {
             Values = new List<IAppMessageDictionaryEntry>();
         }
 
+        public AppMessageDictionary(byte[] bytes)
+        {
+            Values = new List<IAppMessageDictionaryEntry>();
+            int index = 0;
+            var command = bytes[index];
+            index++;
+
+            if (command == COMMAND)
+            {
+                TransactionId = bytes[index];
+                index++;
+
+                ApplicationId = new UUID(bytes.Skip(index).Take(16).ToArray());
+                index += 16;
+
+                int tupleCount = bytes[index];
+                index++;
+
+                for (int i = 0; i < tupleCount; i++)
+                {
+                    uint k;
+                    byte t;
+                    ushort l;
+
+                    k = BitConverter.ToUInt32(bytes, index);
+                    index += 4;
+
+                    t = bytes[index];
+                    index++;
+
+                    l = BitConverter.ToUInt16(bytes, index);
+                    index += 2;
+
+                    IAppMessageDictionaryEntry entry = null;
+                    if (t == (byte)PackedType.Bytes)
+                    {
+                        entry = new AppMessageBytes() { Value = bytes.Skip(index).Take(l).ToArray() };
+                    }
+                    else if (t == (byte)PackedType.Signed)
+                    {
+                        if (l == 1)
+                        {
+                            entry = new AppMessageInt8() { Value = Convert.ToSByte(bytes[index]) };
+                        }
+                        else if (l == 2)
+                        {
+                            entry = new AppMessageInt16() { Value = BitConverter.ToInt16(bytes, index) };
+                        }
+                        else if (l == 4)
+                        {
+                            entry = new AppMessageInt32() { Value = BitConverter.ToInt32(bytes, index) };
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Invalid signed integer length");
+                        }
+                    }
+                    else if (t == (byte)PackedType.String)
+                    {
+                        entry = new AppMessageString() { Value = System.Text.Encoding.UTF8.GetString(bytes, index, l) };
+                    }
+                    else if (t == (byte)PackedType.Unsigned)
+                    {
+                        if (l == 1)
+                        {
+                            entry = new AppMessageUInt8() { Value = bytes[index] };
+                        }
+                        else if (l == 2)
+                        {
+                            entry = new AppMessageUInt16() { Value = BitConverter.ToUInt16(bytes, index) };
+                        }
+                        else if (l == 4)
+                        {
+                            entry = new AppMessageUInt32() { Value = BitConverter.ToUInt32(bytes, index) };
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Invalid signed integer length");
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unknown tuple type");
+                    }
+                    index += l;
+                    entry.Key = k;
+                    Values.Add(entry);
+                }
+            }
+        }
+
         public IList<IAppMessageDictionaryEntry> Values { get; set; }
 
-        public byte[] GetBytes(byte transactionId,UUID appId)
+        public byte[] GetBytes()
         {
             if (Values != null && Values.Any())
             {
                 var bytes = new List<byte>();
                 bytes.Add(COMMAND);
-                bytes.Add(transactionId);
-                bytes.AddRange(appId.Data);
+                bytes.Add(TransactionId);
+                bytes.AddRange(ApplicationId.Data);
                 bytes.Add((byte)Values.Count);
                 uint index = 0;
                 foreach (var tuple in Values)
@@ -145,6 +239,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     public class AppMessageUInt16 : AppMessageDictionaryEntry<UInt16>
@@ -173,6 +272,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                     throw new InvalidOperationException("Incorrect # of bytes");
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 
@@ -203,6 +307,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     public class AppMessageInt8 : AppMessageDictionaryEntry<sbyte>
@@ -231,6 +340,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                     throw new InvalidOperationException("Incorrect # of bytes");
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 
@@ -261,6 +375,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     public class AppMessageInt32 : AppMessageDictionaryEntry<Int32>
@@ -289,6 +408,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                     throw new InvalidOperationException("Incorrect # of bytes");
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 
@@ -319,6 +443,11 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     public class AppMessageBytes : AppMessageDictionaryEntry<byte[]>
@@ -347,6 +476,17 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
                     throw new OverflowException("Specified array is too large for length to fit in a ushort");
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            var s = new StringBuilder();
+            foreach(var b in Value)
+            {
+                s.Append(b.ToString());
+                s.Append(",");
+            }
+            return s.ToString();
         }
     }
 }
