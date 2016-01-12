@@ -12,8 +12,7 @@ There are a couple tricks to getting it working.
 * Mono sockets attempt to translate from the .net enum to the host OS enum for a given address family.  This causes a problem with opening a socket for bluetooth, this is detailed by the author of the inthehand/bluez implementation here: https://bugzilla.xamarin.com/show_bug.cgi?id=262 .  To work around this issue you must pull the mono source, apply the afforementioned patch, and compile mono yourself. https://neildanson.wordpress.com/2013/12/10/building-mono-on-a-raspberry-pi-hard-float/
 
 ===========
-Here is a step by step breakdown of how to get raspbian setup such that this will run.
-
+Here is a step by step breakdown of how to get raspbian wheezy setup such that this will run.
 
 //add the mono package repos (we don't use the ones from debian because they are super old)
 * sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
