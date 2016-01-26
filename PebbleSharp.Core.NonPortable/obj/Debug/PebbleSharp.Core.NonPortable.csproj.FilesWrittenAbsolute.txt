@@ -1,5 +1,0 @@
-/home/pi/dev/PebbleSharp/PebbleSharp.Core.NonPortable/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/pi/dev/PebbleSharp/PebbleSharp.Core.NonPortable/bin/Debug/PebbleSharp.Core.NonPortable.dll.mdb
-/home/pi/dev/PebbleSharp/PebbleSharp.Core.NonPortable/bin/Debug/PebbleSharp.Core.NonPortable.dll
-/home/pi/dev/PebbleSharp/PebbleSharp.Core.NonPortable/obj/Debug/PebbleSharp.Core.NonPortable.dll
-/home/pi/dev/PebbleSharp/PebbleSharp.Core.NonPortable/obj/Debug/PebbleSharp.Core.NonPortable.dll.mdb

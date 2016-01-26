@@ -1,6 +1,10 @@
 ﻿<Properties StartupItem="PebbleCmd/PebbleCmd.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleCmd/Program.cs">
+    <Files>
+      <File FileName="PebbleCmd/Program.cs" Line="49" Column="49" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/Net.Bluetooth_Sdp2/ServiceRecordUtilities.cs" line="475" column="1" />

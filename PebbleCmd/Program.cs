@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using PebbleSharp.Core;
 using PebbleSharp.Core.Responses;
 using PebbleSharp.Net45;
-using InTheHand.Net.Bluetooth;
 using PebbleSharp.Core.Bundles;
 using PebbleSharp.Core.NonPortable.AppMessage;
 
@@ -28,13 +27,9 @@ namespace PebbleCmd
 		{
             try
             {
-                //check if BlueZ support is enabled
-                Console.WriteLine("Radio Software Manufacturer {0}", BluetoothRadio.PrimaryRadio.SoftwareManufacturer);
-
-
                 Console.WriteLine("PebbleCmd");
                 Console.WriteLine("Select Pebble to connect to:");
-                var pebbles = PebbleNet45.DetectPebbles();
+				var pebbles = PebbleNet45.Detect(null,true);
                 if (pebbles != null && pebbles.Any())
                 {
 					int result =0;

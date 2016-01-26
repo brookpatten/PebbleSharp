@@ -1,0 +1,6 @@
+[submodule "dbus-sharp"]
+	path = dbus-sharp
+	url = https://github.com/brookpatten/dbus-sharp.git
+[submodule "Mono.BlueZ"]
+	path = Mono.BlueZ
+	url = https://github.com/brookpatten/Mono.BlueZ.git
