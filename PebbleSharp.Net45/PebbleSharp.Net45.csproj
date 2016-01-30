@@ -55,7 +55,7 @@
       <Project>{68E6EB3B-4076-48F6-9EB6-1181057C0977}</Project>
       <Name>Mono.BlueZ.DBus</Name>
     </ProjectReference>
-    <ProjectReference Include="..\dbus-sharp\src\dbus-sharp.csproj">
+    <ProjectReference Include="..\Mono.BlueZ\dbus-sharp\src\dbus-sharp.csproj">
       <Project>{09A0200F-F3AF-4BD6-9EC4-E7D80D273E4C}</Project>
       <Name>dbus-sharp</Name>
     </ProjectReference>
