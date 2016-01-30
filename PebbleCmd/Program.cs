@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PebbleSharp.Core;
 using PebbleSharp.Core.Responses;
-using PebbleSharp.Net45;
+using PebbleSharp.Mono.BlueZ5;
 using PebbleSharp.Core.Bundles;
 using PebbleSharp.Core.NonPortable.AppMessage;
 
@@ -27,9 +27,10 @@ namespace PebbleCmd
 		{
             try
             {
+				var manager = new PebbleManager();
                 Console.WriteLine("PebbleCmd");
                 Console.WriteLine("Select Pebble to connect to:");
-				var pebbles = PebbleNet45.Detect(null,true);
+				var pebbles = manager.Detect(null,true);
                 if (pebbles != null && pebbles.Any())
                 {
 					int result =0;

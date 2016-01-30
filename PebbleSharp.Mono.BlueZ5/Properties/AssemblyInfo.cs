@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PebbleSharp.Net45")]
+[assembly: AssemblyTitle("PebbleSharp.Mono.BlueZ5")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PebbleSharp.Net45")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyProduct("PebbleSharp.Mono.BlueZ5")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e00a91d1-e4bd-4a5a-bf72-beb72f9375c3")]
+[assembly: Guid("e00a91d1-e4bd-4a5a-bf72-beb72f9495c3")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -57,9 +57,9 @@
       <Project>{E52DCFA6-ED09-4B88-AE50-97072323942C}</Project>
       <Name>PebbleSharp.Core.NonPortable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PebbleSharp.Net45\PebbleSharp.Net45.csproj">
+    <ProjectReference Include="..\PebbleSharp.Mono.BlueZ5\PebbleSharp.Mono.BlueZ5.csproj">
       <Project>{40BD0369-85E6-4712-A28C-0C9178FD6F33}</Project>
-      <Name>PebbleSharp.Net45</Name>
+      <Name>PebbleSharp.Mono.BlueZ5</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

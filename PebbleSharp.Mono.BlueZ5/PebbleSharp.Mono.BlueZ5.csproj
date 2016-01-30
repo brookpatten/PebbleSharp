@@ -7,8 +7,8 @@
     <ProjectGuid>{40BD0369-85E6-4712-A28C-0C9178FD6F33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PebbleSharp.Net45</RootNamespace>
-    <AssemblyName>PebbleSharp.Net45</AssemblyName>
+    <RootNamespace>PebbleSharp.Mono.BlueZ5</RootNamespace>
+    <AssemblyName>PebbleSharp.Mono.BlueZ5</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -41,10 +41,14 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zip.cs" />
+    <Compile Include="PebbleBluetoothConnection.cs" />
+    <Compile Include="PebbleAgent.cs" />
+    <Compile Include="PebbleProfile.cs" />
+    <Compile Include="PebbleManager.cs" />
+    <Compile Include="BlueZ5Pebble.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Compile Include="PebbleNet45.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.NonPortable.csproj">

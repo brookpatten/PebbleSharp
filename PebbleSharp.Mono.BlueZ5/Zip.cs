@@ -4,7 +4,7 @@ using System.Linq;
 using Ionic.Zip;
 using PebbleSharp.Core;
 
-namespace PebbleSharp.Net45
+namespace PebbleSharp.Mono.BlueZ5
 {
     public sealed class Zip : IZip
     {
