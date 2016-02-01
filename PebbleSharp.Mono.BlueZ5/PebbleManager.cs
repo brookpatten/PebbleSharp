@@ -129,28 +129,32 @@ namespace PebbleSharp.Mono.BlueZ5
 					if (managedObjects [obj].ContainsKey (typeof(Device1).DBusInterfaceName ())) 
 					{
 						var managedObject = managedObjects [obj];
-						var name = (string)managedObject[typeof(Device1).DBusInterfaceName()]["Name"];
-
-						if (name.StartsWith ("Pebble")) 
+						if (managedObject [typeof(Device1).DBusInterfaceName ()].ContainsKey ("Name"))
 						{
-							var device = _connection.System.GetObject<Device1> (Service, obj);
+							var name = (string)managedObject [typeof(Device1).DBusInterfaceName ()] ["Name"];
+							if (name.StartsWith ("Pebble"))
+							{
+								var device = _connection.System.GetObject<Device1> (Service, obj);
 
-							try
-							{
-								if (!device.Paired) {
-									device.Pair ();
+								try
+								{
+									if (!device.Paired)
+									{
+										device.Pair ();
+									}
+									if (!device.Trusted)
+									{
+										device.Trusted = true;
+									}
+									Pebbles [obj] = new DiscoveredPebble (){ Name = name, Device = device };
+									device.ConnectProfile (PebbleSerialUUID);
+								} catch (Exception ex)
+								{
+									//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
 								}
-								if (!device.Trusted) {
-									device.Trusted=true;
-								}
-								Pebbles[obj]=new DiscoveredPebble(){Name=name,Device = device};
-								device.ConnectProfile(PebbleSerialUUID);
-							}
-							catch(Exception ex)
-							{
-								//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
 							}
 						}
+						//if it doesn't have the Name Property we can safely assume it is not a pebble
 					}
 				}
 			}
