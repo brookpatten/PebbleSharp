@@ -66,21 +66,18 @@ namespace PebbleSharp.Mono.BlueZ5
 			ProfileManager.RegisterProfile (ProfilePath
 				, PebbleSerialUUID
 				, properties);
-			Profile.NewConnectionAction=(path,stream,props)=>{
-				if(Pebbles.ContainsKey(path))
-				{
-					Pebbles[path].FileDescriptor = stream;
-				}
+			Profile.NewConnectionAction=(path,fd,props)=>{
+				Pebbles[path].FileDescriptor = fd;
 			};
 
 			//get a copy of the object manager so we can browse the "tree" of bluetooth items
 			ObjectManager = _connection.System.GetObject<org.freedesktop.DBus.ObjectManager> (Service, ObjectPath.Root);
 			//register these events so we can tell when things are added/removed (eg: discovery)
 			ObjectManager .InterfacesAdded += (p, i) => {
-				System.Console.WriteLine (p + " Discovered");
+				System.Console.WriteLine ("Discovered "+p);
 			};
 			ObjectManager .InterfacesRemoved += (p, i) => {
-				System.Console.WriteLine (p + " Lost");
+				System.Console.WriteLine ("Lost" + p);
 			};
 
 			//get the agent manager so we can register our agent
@@ -136,7 +133,6 @@ namespace PebbleSharp.Mono.BlueZ5
 
 						if (name.StartsWith ("Pebble")) 
 						{
-							System.Console.WriteLine ("Device " + name + " at " + obj);
 							var device = _connection.System.GetObject<Device1> (Service, obj);
 
 							try
@@ -147,8 +143,8 @@ namespace PebbleSharp.Mono.BlueZ5
 								if (!device.Trusted) {
 									device.Trusted=true;
 								}
-								device.ConnectProfile(PebbleSerialUUID);
 								Pebbles[obj]=new DiscoveredPebble(){Name=name,Device = device};
+								device.ConnectProfile(PebbleSerialUUID);
 							}
 							catch(Exception ex)
 							{
