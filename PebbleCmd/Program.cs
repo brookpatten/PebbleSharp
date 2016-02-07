@@ -29,8 +29,9 @@ namespace PebbleCmd
             {
 				var manager = new PebbleManager();
                 Console.WriteLine("PebbleCmd");
-                Console.WriteLine("Select Pebble to connect to:");
-				var pebbles = manager.Detect(null,true);
+                Console.WriteLine("Discovering and Pairing Pebbles");
+				var pebbles = manager.Detect("hci0",false);
+				Console.WriteLine("Select Pebble to connect to:");
                 if (pebbles != null && pebbles.Any())
                 {
 					int result =0;
@@ -66,9 +67,14 @@ namespace PebbleCmd
 
         private static string SelectApp()
         {
-            string appPath = "../../../";
-            DirectoryInfo di = new DirectoryInfo(appPath);
-            var files = di.GetFiles("*.pbw");
+			string exePath = System.Reflection.Assembly.GetExecutingAssembly ().CodeBase;
+			if (exePath.StartsWith ("file:"))
+			{
+				exePath = exePath.Substring (5);
+			}
+			string exeDir = Path.GetDirectoryName (exePath);
+			var dir = new DirectoryInfo (exeDir);
+			var files = dir.GetFiles ("*.pbw");
 
             if (files.Any())
             {
@@ -90,6 +96,8 @@ namespace PebbleCmd
             }
         }
 
+
+
         private static async Task ShowPebbleMenu( Pebble pebble )
         {
             //string uuid = "22a27b9a-0b07-47af-ad87-b2c29305bab6";
@@ -102,7 +110,9 @@ namespace PebbleCmd
                 "Send Ping",
                 "Media Commands",
                 "Install App",
-                "Send App Message");
+                "Send App Message",
+				"Test BlobDB",
+				"Send Notification");
             while ( true )
             {
                 switch (menu.ShowMenu())
@@ -149,7 +159,10 @@ namespace PebbleCmd
                                     bundle.Load(stream, zip);
                                     var task = pebble.InstallAppAsync(bundle, progress);
                                     await task;
-                                    Console.WriteLine("App Installed");
+                                    Console.WriteLine("App Installed, launching...");
+									var uuid=new UUID(bundle.AppInfo.UUID);
+									pebble.LaunchApp(uuid);
+									Console.WriteLine ("Launched");
                                 }
                             }
                         }
@@ -201,11 +214,147 @@ namespace PebbleCmd
                         {
                             Console.WriteLine("No .pbw");
                         }
-                        break;
+						break;
+					case 8:
+						TestBlobDB(pebble);
+						break;
+					case 9:
+						TestNotification(pebble);
+						break;
                 }
             }
         }
 
+		private static void TestNotification(Pebble pebble)
+		{
+			var item = new TimelineItem()
+			{
+				ItemId = new UUID("22a27b9a-0b07-47af-ad87-b2c29305bab6"),
+				ParentId = new UUID(new byte[16]),
+				TimeStamp = DateTime.UtcNow,
+				Duration = 0,
+				ItemType = TimelineItem.TimelineItemType.Notification,
+				Flags = 0,
+				Layout = 0x01,
+				Attributes = new List<TimelineAttribute>() {
+					new TimelineAttribute(){
+						AttributeId=0x01,
+						Content=Util.GetBytes("MrGibbs",false)
+					},
+					new TimelineAttribute(){
+						AttributeId=4,
+						Content=BitConverter.GetBytes((uint)45)
+					},
+					new TimelineAttribute(){
+						AttributeId=0x03,
+						Content=Util.GetBytes("Hello world!",false)
+					},
+					new TimelineAttribute{
+						AttributeId=0x02,
+						Content=Util.GetBytes("Subject",false)
+					}
+				},
+				Actions = new List<TimelineAction>() { 
+					new TimelineAction(){
+						ActionId=0,
+						ActionType = TimelineAction.TimelineActionType.Dismiss,
+						Attributes = new List<TimelineAttribute>(){
+							new TimelineAttribute(){
+								AttributeId=0x01,
+								Content=Util.GetBytes("Dismiss",false)
+							}
+						}
+					}
+				}
+			};
+
+			/*source_map = {
+            None: 1,
+            NotificationSource.Email: 19,
+            NotificationSource.Facebook: 11,
+            NotificationSource.SMS: 45,
+            NotificationSource.Twitter: 6,
+        	})*/
+
+			var bytes = item.GetBytes();
+			var task = pebble.BlobDBClient.Insert(BlobDatabase.Notification, item.ItemId.Data, bytes);
+			task.Wait();
+			var result = task.Result;
+
+			if (result.Response == BlobStatus.Success)
+			{
+				System.Console.Write("Insert Success, Deleting in ");
+				for (int i = 5; i > 0; i--)
+				{
+					System.Console.Write(i + "...");
+					System.Threading.Thread.Sleep(1000);
+				}
+				System.Console.WriteLine();
+
+				task = pebble.BlobDBClient.Delete(BlobDatabase.Notification, item.ItemId.Data);
+				task.Wait();
+				result = task.Result;
+
+				if (result.Response == BlobStatus.Success)
+				{
+					System.Console.WriteLine("Delete Success");
+				}
+				else
+				{
+					System.Console.WriteLine("Delete Failed: " + result.Response);
+				}
+			}
+			else
+			{
+				System.Console.WriteLine("Insert Failed:" + result.Response.ToString()+" with token "+result.Token);
+			}
+		}
+
+		private static void TestBlobDB(Pebble pebble)
+		{
+			//var clearTask = pebble.BlobDBClient.Clear(BlobDatabase.Test);
+			//clearTask.Wait();
+			//var result = clearTask.Result;
+
+			var uuid = new UUID("22a27b9a-0b07-47af-ad87-b2c29305bab6");
+
+			var meta = new PebbleSharp.Core.BlobDB.AppMetaData();
+			meta.AppFaceTemplateId = 0;
+			meta.AppVersionMajor = 1;
+			meta.AppVersionMinor = 0;
+			meta.SdkVersionMajor = 5;
+			meta.SdkVersionMinor = 59;
+			meta.Flags = int.MaxValue;
+			meta.Icon = 0;
+			meta.UUID = uuid;
+			meta.Name = "pebble-app.bin";
+
+			var bytes = meta.GetBytes();
+			var task = pebble.BlobDBClient.Insert(BlobDatabase.App, uuid.Data, bytes);
+			task.Wait();
+			var result = task.Result;
+
+			if (result.Response == BlobStatus.Success)
+			{
+				System.Console.WriteLine("Insert Success, Deleting...");
+				task = pebble.BlobDBClient.Delete(BlobDatabase.App, uuid.Data);
+				task.Wait();
+				result = task.Result;
+
+				if (result.Response == BlobStatus.Success)
+				{
+					System.Console.WriteLine("Delete Success");
+				}
+				else
+				{
+					System.Console.WriteLine("Delete Failed: " + result.Response);
+				}
+			}
+			else
+			{
+				System.Console.WriteLine("Insert Failed:" + result.Response.ToString()+" with token "+result.Token);
+			}
+		}
         
 
         private static void ShowMediaCommands( Pebble pebble )

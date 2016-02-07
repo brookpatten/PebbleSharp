@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PebbleSharp.Core.Bundles;
 using PebbleSharp.Core.NonPortable.AppMessage;
 using PebbleSharp.Core.Responses;
+using PebbleSharp.Core.BlobDB;
 
 namespace PebbleSharp.Core
 {
@@ -32,6 +33,8 @@ namespace PebbleSharp.Core
         private uint _RemoteCaps = (uint)( RemoteCaps.Telephony | RemoteCaps.SMS | RemoteCaps.Android );
         private uint _SessionCaps = (uint)SessionCaps.GAMMA_RAY;
 
+		public BlobDBClient BlobDBClient { get; private set;}
+
         /// <summary>
         ///     Create a new Pebble
         /// </summary>
@@ -44,6 +47,7 @@ namespace PebbleSharp.Core
         {
             ResponseTimeout = TimeSpan.FromSeconds( 5 );
             PebbleID = pebbleId;
+			this.BlobDBClient = new BlobDBClient(this);
 
             _callbackHandlers = new Dictionary<Type, List<CallbackContainer>>();
 
@@ -251,53 +255,79 @@ namespace PebbleSharp.Core
 
         public async Task InstallAppAsync( AppBundle bundle, IProgress<ProgressValue> progress = null )
         {
-            if ( bundle == null )
-                throw new ArgumentNullException( "bundle" );
-
-            if ( progress != null )
-                progress.Report( new ProgressValue( "Removing previous install(s) of the app if they exist", 1 ) );
-            ApplicationMetadata metaData = bundle.AppMetadata;
-            UUID uuid = metaData.UUID;
-
-            AppbankInstallResponse appbankInstallResponse = await RemoveAppByUUID( uuid );
-            if ( appbankInstallResponse.Success == false )
-                return;
-
-            if ( progress != null )
-                progress.Report( new ProgressValue( "Getting current apps", 20 ) );
-            AppbankResponse appBankResult = await GetAppbankContentsAsync();
-
-            if ( appBankResult.Success == false )
-                throw new PebbleException( "Could not obtain app list; try again" );
-            AppBank appBank = appBankResult.AppBank;
-
-            byte firstFreeIndex = 1;
-            foreach ( App app in appBank.Apps )
-                if ( app.Index == firstFreeIndex )
-                    firstFreeIndex++;
-            if ( firstFreeIndex == appBank.Size )
-                throw new PebbleException( "All app banks are full" );
-
-            if ( progress != null )
-                progress.Report( new ProgressValue( "Transferring app to Pebble", 40 ) );
-
-            if ( await PutBytes( bundle.App, firstFreeIndex, TransferType.Binary ) == false )
-                throw new PebbleException( "Failed to send application binary pebble-app.bin" );
-
-            if ( bundle.HasResources )
-            {
-                if ( progress != null )
-                    progress.Report( new ProgressValue( "Transferring app resources to Pebble", 60 ) );
-                if ( await PutBytes( bundle.Resources, firstFreeIndex, TransferType.Resources ) == false )
-                    throw new PebbleException( "Failed to send application resources app_resources.pbpack" );
-            }
-
-            if ( progress != null )
-                progress.Report( new ProgressValue( "Adding app", 80 ) );
-            await AddApp( firstFreeIndex );
-            if ( progress != null )
-                progress.Report( new ProgressValue( "Done", 100 ) );
+			var firmware = await this.GetFirmwareVersionAsync ();
+			string version = firmware.Firmware.Version;
+			version = version.Replace("v", "");
+			var components = version.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+			IList<int> versionComponents = components.Select(x => int.Parse(x)).ToList();
+			if (versionComponents[0] < 3) 
+			{
+				await InstallAppLegacyV2 (bundle, progress);
+			} 
+			else 
+			{
+				await InstallAppAsyncV3 (bundle, progress);
+			}
         }
+
+		private async Task InstallAppAsyncV3(AppBundle bundle,IProgress<ProgressValue> progress)
+		{
+			//https://github.com/pebble/libpebble2/blob/master/libpebble2/services/install.py
+
+			//https://github.com/pebble/libpebble2/blob/master/libpebble2/services/blobdb.py
+
+			throw new NotImplementedException("App install on firmware v3 is not implemented");
+		}
+
+		private async Task InstallAppLegacyV2(AppBundle bundle, IProgress<ProgressValue> progress= null)
+		{
+			if ( bundle == null )
+				throw new ArgumentNullException( "bundle" );
+
+			if ( progress != null )
+				progress.Report( new ProgressValue( "Removing previous install(s) of the app if they exist", 1 ) );
+			ApplicationMetadata metaData = bundle.AppMetadata;
+			UUID uuid = metaData.UUID;
+
+			AppbankInstallResponse appbankInstallResponse = await RemoveAppByUUID( uuid );
+			if ( appbankInstallResponse.Success == false )
+				return;
+
+			if ( progress != null )
+				progress.Report( new ProgressValue( "Getting current apps", 20 ) );
+			AppbankResponse appBankResult = await GetAppbankContentsAsync();
+
+			if ( appBankResult.Success == false )
+				throw new PebbleException( "Could not obtain app list; try again" );
+			AppBank appBank = appBankResult.AppBank;
+
+			byte firstFreeIndex = 1;
+			foreach ( App app in appBank.Apps )
+				if ( app.Index == firstFreeIndex )
+					firstFreeIndex++;
+			if ( firstFreeIndex == appBank.Size )
+				throw new PebbleException( "All app banks are full" );
+
+			if ( progress != null )
+				progress.Report( new ProgressValue( "Transferring app to Pebble", 40 ) );
+
+			if ( await PutBytes( bundle.App, firstFreeIndex, TransferType.Binary ) == false )
+				throw new PebbleException( "Failed to send application binary pebble-app.bin" );
+
+			if ( bundle.HasResources )
+			{
+				if ( progress != null )
+					progress.Report( new ProgressValue( "Transferring app resources to Pebble", 60 ) );
+				if ( await PutBytes( bundle.Resources, firstFreeIndex, TransferType.Resources ) == false )
+					throw new PebbleException( "Failed to send application resources app_resources.pbpack" );
+			}
+
+			if ( progress != null )
+				progress.Report( new ProgressValue( "Adding app", 80 ) );
+			await AddApp( firstFreeIndex );
+			if ( progress != null )
+				progress.Report( new ProgressValue( "Done", 100 ) );
+		}
 
         
 
@@ -441,19 +471,47 @@ namespace PebbleSharp.Core
         {
             Debug.WriteLine( "Received {0} message: {1}", (Endpoint)e.Endpoint, BitConverter.ToString( e.Payload ) );
 
-            IResponse response = _responseManager.HandleResponse( (Endpoint)e.Endpoint, e.Payload );
+			var endpoint = (Endpoint)e.Endpoint;
+			IResponse response = _responseManager.HandleResponse( endpoint, e.Payload );
 
             if ( response != null )
             {
+				if (e.Endpoint == (ushort)Endpoint.BlobDB)
+				{
+					var blobDbPacket = new BlobDBResponse();
+					blobDbPacket.SetPayload(e.Payload);
+					System.Console.WriteLine("BlobDB Response:" + blobDbPacket.Response.ToString());
+				}
+
+
                 //Check for callbacks
                 List<CallbackContainer> callbacks;
-                if ( _callbackHandlers.TryGetValue( response.GetType(), out callbacks ) )
-                {
-                    foreach ( CallbackContainer callback in callbacks )
-                        callback.Invoke( response );
-                }
+				if (_callbackHandlers.TryGetValue(response.GetType(), out callbacks))
+				{
+					foreach (CallbackContainer callback in callbacks)
+						callback.Invoke(response);
+				}
+				else
+				{
+					Console.WriteLine("Received message with no callback on endpoint "+e.Endpoint);
+					//if (endpoint == Endpoint.DataLog)
+					{
+						var log = System.Text.UTF8Encoding.UTF8.GetString(e.Payload);
+						Console.WriteLine(log);
+					}
+
+				}
             }
         }
+
+		public async Task<BlobDBResponse> SendBlobDBMessage(BlobDBCommand command)
+		{
+			//TODO: I'm not sure we should assume that the first blobdb response we get is the one that 
+			//corresponds to this request, we probably need to do extra work here to match up the token
+			var bytes = command.GetBytes();
+
+			return await SendMessageAsync<BlobDBResponse>(Endpoint.BlobDB,bytes );
+		}
 
         public async Task<ApplicationMessageResponse> SendApplicationMessage(AppMessageDictionary data)
         {
@@ -509,12 +567,14 @@ namespace PebbleSharp.Core
             return await SendMessageAsync<AppbankInstallResponse>( Endpoint.AppManager, data );
         }
 
-        private async Task<bool> PutBytes( byte[] binary, byte index, TransferType transferType )
+        private async Task<bool> PutBytes( byte[] binary, byte index, TransferType transferType)
         {
             byte[] length = Util.GetBytes( binary.Length );
 
-            //Get token
-            byte[] header = Util.CombineArrays( new byte[] { 1 }, length, new[] { (byte)transferType, index } );
+			//Get token
+			byte[] header;
+
+			header = Util.CombineArrays(new byte[] { 1 }, length, new[] { (byte)transferType, index });
 
             var rawMessageArgs = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, header );
             if ( rawMessageArgs.Success == false )
@@ -558,6 +618,58 @@ namespace PebbleSharp.Core
             }
             return completeResult.Success;
         }
+
+		private async Task<bool> PutBytesV3( byte[] binary, TransferType transferType, byte app_install_id )
+		{
+			byte[] length = Util.GetBytes( binary.Length );
+
+			//Get token
+			byte[] header;
+
+			header = Util.CombineArrays(new byte[] { 1 }, length, new byte[] { (byte)transferType,0,0,0, app_install_id });
+
+			var rawMessageArgs = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, header );
+			if ( rawMessageArgs.Success == false )
+				return false;
+
+			byte[] tokenResult = rawMessageArgs.Response;
+			byte[] token = tokenResult.Skip( 1 ).ToArray();
+
+			const int BUFFER_SIZE = 2000;
+			//Send at most 2000 bytes at a time
+			for ( int i = 0; i <= binary.Length / BUFFER_SIZE; i++ )
+			{
+				byte[] data = binary.Skip( BUFFER_SIZE * i ).Take( BUFFER_SIZE ).ToArray();
+				byte[] dataHeader = Util.CombineArrays( new byte[] { 2 }, token, Util.GetBytes( data.Length ) );
+				var result = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, Util.CombineArrays( dataHeader, data ) );
+				if ( result.Success == false )
+				{
+					await AbortPutBytesAsync( token );
+					return false;
+				}
+			}
+
+			//Send commit message
+			uint crc = Crc32.Calculate( binary );
+			byte[] crcBytes = Util.GetBytes( crc );
+			byte[] commitMessage = Util.CombineArrays( new byte[] { 3 }, token, crcBytes );
+			var commitResult = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, commitMessage );
+			if ( commitResult.Success == false )
+			{
+				await AbortPutBytesAsync( token );
+				return false;
+			}
+
+
+			//Send complete message
+			byte[] completeMessage = Util.CombineArrays( new byte[] { 5 }, token );
+			var completeResult = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, completeMessage );
+			if ( completeResult.Success == false )
+			{
+				await AbortPutBytesAsync( token );
+			}
+			return completeResult.Success;
+		}
 
         private async Task<PutBytesResponse> AbortPutBytesAsync( byte[] token )
         {

@@ -7,7 +7,7 @@
     <ProjectGuid>{E52DCFA6-ED09-4B88-AE50-97072323942C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PebbleSharp.Core.NonPortable</RootNamespace>
+    <RootNamespace>PebbleSharp.Core</RootNamespace>
     <AssemblyName>PebbleSharp.Core.NonPortable</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -84,6 +84,16 @@
     <Compile Include="Unpack.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="UUID.cs" />
+    <Compile Include="BlobDB\BlobDBClient.cs" />
+    <Compile Include="BlobDB\BlobDBResponse.cs" />
+    <Compile Include="BlobDB\AppMetaData.cs" />
+    <Compile Include="BlobDB\BlobDBCommand.cs" />
+    <Compile Include="BlobDB\TimelineItem.cs" />
+    <Compile Include="BlobDB\TimelineAttribute.cs" />
+    <Compile Include="BlobDB\TimelineAction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BlobDB\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

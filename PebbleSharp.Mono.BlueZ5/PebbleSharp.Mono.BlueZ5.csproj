@@ -51,10 +51,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.NonPortable.csproj">
-      <Project>{E52DCFA6-ED09-4B88-AE50-97072323942C}</Project>
-      <Name>PebbleSharp.Core.NonPortable</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mono.BlueZ\Mono.BlueZ.DBus\Mono.BlueZ.DBus.csproj">
       <Project>{68E6EB3B-4076-48F6-9EB6-1181057C0977}</Project>
       <Name>Mono.BlueZ.DBus</Name>
@@ -62,6 +58,10 @@
     <ProjectReference Include="..\Mono.BlueZ\dbus-sharp\src\dbus-sharp.csproj">
       <Project>{09A0200F-F3AF-4BD6-9EC4-E7D80D273E4C}</Project>
       <Name>dbus-sharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.csproj">
+      <Project>{E52DCFA6-ED09-4B88-AE50-97072323942C}</Project>
+      <Name>PebbleSharp.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

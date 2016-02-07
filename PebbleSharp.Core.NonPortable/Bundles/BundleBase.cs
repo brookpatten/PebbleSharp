@@ -13,6 +13,37 @@ namespace PebbleSharp.Core.Bundles
 
         protected abstract void LoadData(IZip zip);
 
+		protected string PlatformSubdirectory = "";
+
+		private BundleManifest LoadManifest(IZip zip)
+		{
+			Stream manifestStream = null;
+
+			try{
+				PlatformSubdirectory="";
+				manifestStream = zip.OpenEntryStream("manifest.json");
+				if(manifestStream==null)
+				{
+					PlatformSubdirectory="basalt";
+					manifestStream = zip.OpenEntryStream(PlatformSubdirectory+"/manifest.json");
+				}
+				if(manifestStream==null)
+				{
+					PlatformSubdirectory="";
+					throw new InvalidOperationException("manifest.json not found in archive - not a valid Pebble bundle.");
+				}
+				var serializer = new DataContractJsonSerializer(typeof(BundleManifest));
+				return (BundleManifest)serializer.ReadObject(manifestStream);
+			}
+			finally
+			{
+				if(manifestStream!=null)
+				{
+					manifestStream.Dispose();
+				}
+			}
+		}
+
         /// <summary>
         ///     Create a new PebbleBundle from a .pwb file and parse its metadata.
         /// </summary>
@@ -24,21 +55,13 @@ namespace PebbleSharp.Core.Bundles
             if (false == zip.Open(bundle))
                 throw new InvalidOperationException("Failed to open pebble bundle");
 
-            using (Stream manifestStream = zip.OpenEntryStream("manifest.json"))
-            {
-                if (manifestStream == null)
-                {
-                    throw new InvalidOperationException("manifest.json not found in archive - not a valid Pebble bundle.");
-                }
-                var serializer = new DataContractJsonSerializer(typeof(BundleManifest));
-                Manifest = (BundleManifest)serializer.ReadObject(manifestStream);
-            }
+			Manifest = LoadManifest (zip);
 
             HasResources = (Manifest.Resources.Size != 0);
 
             if (HasResources)
             {
-                using (Stream resourcesBinary = zip.OpenEntryStream(Manifest.Resources.Filename))
+				using (Stream resourcesBinary = zip.OpenEntryStream(PlatformSubdirectory+"/"+Manifest.Resources.Filename))
                 {
                     if (resourcesBinary == null)
                         throw new PebbleException("Could not find resource entry in the bundle");

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PebbleSharp.Core
 {
-    internal static class Util
+    public static class Util
     {
         /// <summary>
         ///     Convert a Unix timestamp to a DateTime object.

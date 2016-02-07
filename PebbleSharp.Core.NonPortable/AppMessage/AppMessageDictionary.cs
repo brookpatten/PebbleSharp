@@ -476,7 +476,7 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
     {
         public override PackedType PackedType
         {
-            get { return PackedType.String; }
+			get { return PackedType.Bytes; }
         }
 
         public override ushort Length

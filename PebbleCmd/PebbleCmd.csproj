@@ -24,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <Externalconsole>true</Externalconsole>
+    <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,9 +54,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.NonPortable.csproj">
+    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.csproj">
       <Project>{E52DCFA6-ED09-4B88-AE50-97072323942C}</Project>
-      <Name>PebbleSharp.Core.NonPortable</Name>
+      <Name>PebbleSharp.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\PebbleSharp.Mono.BlueZ5\PebbleSharp.Mono.BlueZ5.csproj">
       <Project>{40BD0369-85E6-4712-A28C-0C9178FD6F33}</Project>

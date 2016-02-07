@@ -59,6 +59,7 @@ namespace PebbleSharp.Core.Responses
                         ushort version = Util.GetUInt16(payload, 1);
                         string name = Util.GetString(payload, 3, 32);
                         string company = Util.GetString(payload, 35, 32);
+
                         //var app = new AppBank.App();
                         //app.Name = name;
                         //app.Company = company;
