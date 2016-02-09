@@ -19,20 +19,11 @@ namespace PebbleSharp.Core
     /// </summary>
     public abstract class Pebble
     {
-        public enum SessionCaps : uint
-        {
-            GAMMA_RAY = 0x80000000
-        }
-
-        public const byte PEBBLE_CLIENT_VERSION = 2;
-
-        private readonly PebbleProtocol _PebbleProt;
+		private readonly PebbleProtocol _PebbleProt;
 
         private readonly Dictionary<Type, List<CallbackContainer>> _callbackHandlers;
         private readonly ResponseManager _responseManager = new ResponseManager();
-        private uint _RemoteCaps = (uint)( RemoteCaps.Telephony | RemoteCaps.SMS | RemoteCaps.Android );
-        private uint _SessionCaps = (uint)SessionCaps.GAMMA_RAY;
-
+        
 		public BlobDBClient BlobDBClient { get; private set;}
 
         /// <summary>
@@ -55,6 +46,7 @@ namespace PebbleSharp.Core
             _PebbleProt.RawMessageReceived += RawMessageReceived;
 
             RegisterCallback<ApplicationMessageResponse>( OnApplicationMessageReceived );
+
         }
 
         /// <summary>
@@ -75,25 +67,6 @@ namespace PebbleSharp.Core
         public TimeSpan ResponseTimeout { get; set; }
 
         /// <summary>
-        ///     Set the capabilities you want to tell the Pebble about.
-        ///     Should be called before connecting.
-        /// </summary>
-        /// <param name="sessionCap"></param>
-        /// <param name="remoteCaps"></param>
-        public void SetCaps( uint? sessionCap = null, uint? remoteCaps = null )
-        {
-            if ( sessionCap != null )
-            {
-                _SessionCaps = (uint)sessionCap;
-            }
-
-            if ( remoteCaps != null )
-            {
-                _RemoteCaps = (uint)remoteCaps;
-            }
-        }
-
-        /// <summary>
         ///     Connect with the Pebble.
         /// </summary>
         /// <exception cref="System.IO.IOException">Passed on when no connection can be made.</exception>
@@ -110,13 +83,8 @@ namespace PebbleSharp.Core
 
             if ( response != null )
             {
-                byte[] prefix = { PEBBLE_CLIENT_VERSION, 0xFF, 0xFF, 0xFF, 0xFF };
-                byte[] session = Util.GetBytes( _SessionCaps );
-                byte[] remote = Util.GetBytes( _RemoteCaps );
-
-                byte[] msg = Util.CombineArrays( prefix, session, remote );
-                //\x01\xff\xff\xff\xff\x80\x00\x00\x00\x00\x00\x002
-                await SendMessageNoResponseAsync( Endpoint.PhoneVersion, msg );
+				var message = new AppVersionResponse();
+				await SendMessageNoResponseAsync( Endpoint.PhoneVersion, message.GetBytes() );
                 IsAlive = true;
             }
             else
@@ -481,6 +449,12 @@ namespace PebbleSharp.Core
 					var blobDbPacket = new BlobDBResponse();
 					blobDbPacket.SetPayload(e.Payload);
 					System.Console.WriteLine("BlobDB Response:" + blobDbPacket.Response.ToString());
+				}
+
+				if (e.Endpoint == (ushort)Endpoint.PhoneVersion)
+				{
+					var message = new AppVersionResponse();
+					SendMessageNoResponseAsync( Endpoint.PhoneVersion, message.GetBytes() ).Wait();
 				}
 
 

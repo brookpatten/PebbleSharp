@@ -67,7 +67,13 @@ namespace PebbleSharp.Mono.BlueZ5
 				, PebbleSerialUUID
 				, properties);
 			Profile.NewConnectionAction=(path,fd,props)=>{
+				System.Console.WriteLine("Connecting to " + path);
 				Pebbles[path].FileDescriptor = fd;
+				Pebbles[path].FileDescriptor.SetBlocking();
+				var stream = Pebbles[path].FileDescriptor.OpenAsStream(true);
+				Pebbles[path].Stream=stream;
+				var blueZPebble = new BlueZ5Pebble(new PebbleBluetoothConnection(stream),Pebbles[path].Name);
+				Pebbles[path].Pebble = blueZPebble;
 			};
 
 			//get a copy of the object manager so we can browse the "tree" of bluetooth items
@@ -148,8 +154,10 @@ namespace PebbleSharp.Mono.BlueZ5
 									}
 									Pebbles [obj] = new DiscoveredPebble (){ Name = name, Device = device };
 									device.ConnectProfile (PebbleSerialUUID);
-								} catch (Exception ex)
+								} 
+								catch (Exception ex)
 								{
+									System.Console.WriteLine("Failed to connect to "+obj+" "+ex.Message);
 									//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
 								}
 							}
@@ -161,26 +169,7 @@ namespace PebbleSharp.Mono.BlueZ5
 			//wait for devices to connect
 			Thread.Sleep(2000);
 
-			var results = new List<Pebble>();
-			foreach(var path in Pebbles.Keys)
-			{
-				if(Pebbles[path].FileDescriptor!=null)
-				{
-					if(Pebbles[path].Pebble==null)
-					{
-						Pebbles[path].FileDescriptor.SetBlocking();
-						var stream = Pebbles[path].FileDescriptor.OpenAsStream(true);
-						Pebbles[path].Stream=stream;
-						var blueZPebble = new BlueZ5Pebble(new PebbleBluetoothConnection(stream),Pebbles[path].Name);
-						Pebbles[path].Pebble = blueZPebble;
-						results.Add(blueZPebble);
-					}
-					else
-					{
-						results.Add(Pebbles[path].Pebble);
-					}
-				}
-			}
+			var results = Pebbles.Values.Where(x => x.Pebble != null).Select(x => (Pebble)x.Pebble).ToList();
 			return results;
 		}
 

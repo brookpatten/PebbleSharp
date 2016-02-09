@@ -30,7 +30,7 @@ namespace PebbleCmd
 				var manager = new PebbleManager();
                 Console.WriteLine("PebbleCmd");
                 Console.WriteLine("Discovering and Pairing Pebbles");
-				var pebbles = manager.Detect("hci0",false);
+				var pebbles = manager.Detect("hci0",true);
 				Console.WriteLine("Select Pebble to connect to:");
                 if (pebbles != null && pebbles.Any())
                 {
@@ -312,47 +312,62 @@ namespace PebbleCmd
 
 		private static void TestBlobDB(Pebble pebble)
 		{
-			//var clearTask = pebble.BlobDBClient.Clear(BlobDatabase.Test);
-			//clearTask.Wait();
-			//var result = clearTask.Result;
+			string appPath = SelectApp();
 
-			var uuid = new UUID("22a27b9a-0b07-47af-ad87-b2c29305bab6");
-
-			var meta = new PebbleSharp.Core.BlobDB.AppMetaData();
-			meta.AppFaceTemplateId = 0;
-			meta.AppVersionMajor = 1;
-			meta.AppVersionMinor = 0;
-			meta.SdkVersionMajor = 5;
-			meta.SdkVersionMinor = 59;
-			meta.Flags = int.MaxValue;
-			meta.Icon = 0;
-			meta.UUID = uuid;
-			meta.Name = "pebble-app.bin";
-
-			var bytes = meta.GetBytes();
-			var task = pebble.BlobDBClient.Insert(BlobDatabase.App, uuid.Data, bytes);
-			task.Wait();
-			var result = task.Result;
-
-			if (result.Response == BlobStatus.Success)
+			if (!string.IsNullOrEmpty(appPath) && File.Exists(appPath))
 			{
-				System.Console.WriteLine("Insert Success, Deleting...");
-				task = pebble.BlobDBClient.Delete(BlobDatabase.App, uuid.Data);
-				task.Wait();
-				result = task.Result;
+				using (var stream = new FileStream(appPath, FileMode.Open))
+				{
+					using (var zip = new Zip())
+					{
+						zip.Open(stream);
+						var bundle = new AppBundle();
+						stream.Position = 0;
+						bundle.Load(stream, zip);
 
-				if (result.Response == BlobStatus.Success)
-				{
-					System.Console.WriteLine("Delete Success");
-				}
-				else
-				{
-					System.Console.WriteLine("Delete Failed: " + result.Response);
+						var meta = new PebbleSharp.Core.BlobDB.AppMetaData();
+						meta.AppFaceTemplateId = 0;
+						meta.AppFaceBackgroundColor = 0;
+						meta.AppVersionMajor = bundle.AppMetadata.AppMajorVersion;
+						meta.AppVersionMinor = bundle.AppMetadata.AppMinorVersion;
+						meta.SdkVersionMajor = bundle.AppMetadata.SDKMajorVersion;
+						meta.SdkVersionMinor = bundle.AppMetadata.SDKMinorVersion;
+						meta.Flags = bundle.AppMetadata.Flags;
+						meta.Icon = bundle.AppMetadata.IconResourceID;
+						meta.UUID = bundle.AppMetadata.UUID;
+						meta.Name = bundle.AppMetadata.AppName;
+
+						var bytes = meta.GetBytes();
+						var task = pebble.BlobDBClient.Insert(BlobDatabase.App, meta.UUID.Data, bytes);
+						task.Wait();
+						var result = task.Result;
+
+						if (result.Response == BlobStatus.Success)
+						{
+							System.Console.WriteLine("Insert Success, Deleting...");
+							task = pebble.BlobDBClient.Delete(BlobDatabase.App, meta.UUID.Data);
+							task.Wait();
+							result = task.Result;
+
+							if (result.Response == BlobStatus.Success)
+							{
+								System.Console.WriteLine("Delete Success");
+							}
+							else
+							{
+								System.Console.WriteLine("Delete Failed: " + result.Response);
+							}
+						}
+						else
+						{
+							System.Console.WriteLine("Insert Failed:" + result.Response.ToString()+" with token "+result.Token);
+						}
+					}
 				}
 			}
 			else
 			{
-				System.Console.WriteLine("Insert Failed:" + result.Response.ToString()+" with token "+result.Token);
+				Console.WriteLine("No .pbw");
 			}
 		}
         

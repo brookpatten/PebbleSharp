@@ -91,6 +91,7 @@
     <Compile Include="BlobDB\TimelineItem.cs" />
     <Compile Include="BlobDB\TimelineAttribute.cs" />
     <Compile Include="BlobDB\TimelineAction.cs" />
+    <Compile Include="Responses\AppVersionResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BlobDB\" />

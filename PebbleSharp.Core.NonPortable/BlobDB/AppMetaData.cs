@@ -12,6 +12,7 @@ namespace PebbleSharp.Core.BlobDB
 		public byte AppVersionMinor { get; set; }
 		public byte SdkVersionMajor { get; set; }
 		public byte SdkVersionMinor { get; set; }
+		public byte AppFaceBackgroundColor { get; set; }
 		public byte AppFaceTemplateId { get; set; }
 		public string Name { get; set; }/*Fixed length 96*/
 
@@ -25,6 +26,7 @@ namespace PebbleSharp.Core.BlobDB
 			bytes.Add(AppVersionMinor);
 			bytes.Add(SdkVersionMajor);
 			bytes.Add(SdkVersionMinor);
+			bytes.Add(AppFaceBackgroundColor);
 			bytes.Add(AppFaceTemplateId);
 			var name = Name;
 			if (name.Length > 96)
