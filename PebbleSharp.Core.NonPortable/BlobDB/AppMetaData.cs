@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using PebbleSharp.Core.NonPortable.AppMessage;
+using PebbleSharp.Core.Bundles;
+
 namespace PebbleSharp.Core.BlobDB
 {
 	public class AppMetaData
@@ -29,17 +30,35 @@ namespace PebbleSharp.Core.BlobDB
 			bytes.Add(AppFaceBackgroundColor);
 			bytes.Add(AppFaceTemplateId);
 			var name = Name;
+
+			//TODO: build "fixed" type strings into pebblesharp core
 			if (name.Length > 96)
 			{
 				name = name.Substring(0, 96);
 			}
-			name = name.PadLeft(96, '\0');
+			name = name.PadRight(96, '\0');
 
-			//var nameBytes = System.Text.UTF8Encoding.UTF8.GetBytes(Name.PadLeft(96, '\0'));
 			var nameBytes = Util.GetBytes(name, false);
 
 			bytes.AddRange(nameBytes);
 			return bytes.ToArray();
+		}
+
+		public static AppMetaData FromAppBundle(AppBundle bundle, byte appFaceTemplateId = 0, byte appFaceBackgroundColor = 0)
+		{
+			var meta = new PebbleSharp.Core.BlobDB.AppMetaData();
+			meta.AppFaceTemplateId = appFaceTemplateId;
+			meta.AppFaceBackgroundColor = appFaceBackgroundColor;
+			meta.AppVersionMajor = bundle.AppMetadata.AppMajorVersion;
+			meta.AppVersionMinor = bundle.AppMetadata.AppMinorVersion;
+			meta.SdkVersionMajor = bundle.AppMetadata.SDKMajorVersion;
+			meta.SdkVersionMinor = bundle.AppMetadata.SDKMinorVersion;
+			meta.Flags = bundle.AppMetadata.Flags;
+			meta.Icon = bundle.AppMetadata.IconResourceID;
+			meta.UUID = bundle.AppMetadata.UUID;
+			meta.Name = bundle.AppMetadata.AppName;
+
+			return meta;
 		}
 	}
 }

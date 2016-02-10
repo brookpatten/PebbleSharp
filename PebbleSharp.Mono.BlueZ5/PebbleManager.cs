@@ -117,6 +117,7 @@ namespace PebbleSharp.Mono.BlueZ5
 
 			if(doDiscovery)
 			{
+				System.Console.WriteLine("Starting Discovoery...");
 				//scan for any new devices
 				Adapter.StartDiscovery ();
 				Thread.Sleep(5000);//totally arbitrary constant, the best kind

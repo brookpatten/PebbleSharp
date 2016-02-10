@@ -92,9 +92,13 @@
     <Compile Include="BlobDB\TimelineAttribute.cs" />
     <Compile Include="BlobDB\TimelineAction.cs" />
     <Compile Include="Responses\AppVersionResponse.cs" />
+    <Compile Include="Apps\AppRunStatePacket.cs" />
+    <Compile Include="Apps\AppFetchRequestPacket.cs" />
+    <Compile Include="Apps\AppFetchResponsePacket.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BlobDB\" />
+    <Folder Include="Apps\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -242,9 +242,55 @@ namespace PebbleSharp.Core
 		{
 			//https://github.com/pebble/libpebble2/blob/master/libpebble2/services/install.py
 
-			//https://github.com/pebble/libpebble2/blob/master/libpebble2/services/blobdb.py
+			var meta = AppMetaData.FromAppBundle(bundle);
 
-			throw new NotImplementedException("App install on firmware v3 is not implemented");
+			var bytes = meta.GetBytes();
+			await this.BlobDBClient.Delete(BlobDatabase.App, meta.UUID.Data);
+			var result = await this.BlobDBClient.Insert(BlobDatabase.App, meta.UUID.Data, bytes);
+
+			if (result.Response == BlobStatus.Success)
+			{
+				var startPacket = new AppRunStatePacket();
+				startPacket.Command = AppRunState.Start;
+				startPacket.UUID = meta.UUID;
+
+				var runStateResult = await SendMessageAsync<AppFetchRequestPacket>(Endpoint.AppRunState, startPacket.GetBytes());
+
+				if (!meta.UUID.Equals(runStateResult.UUID))
+				{
+					var response = new AppFetchResponsePacket();
+					response.Response = AppFetchStatus.InvalidUUID;
+					await SendMessageNoResponseAsync(Endpoint.AppFetch, response.GetBytes());
+					throw new InvalidOperationException("The pebble requested the wrong UUID");
+				}
+
+				var putBytesResponse = await PutBytes(bundle.App, TransferType.Binary, appInstallId:runStateResult.AppId);
+				if (!putBytesResponse)
+				{
+					throw new InvalidOperationException("Putbytes failed");
+				}
+
+
+				if (bundle.HasResources)
+				{
+					putBytesResponse = await PutBytes(bundle.Resources, TransferType.Resources, appInstallId:runStateResult.AppId);
+					if (!putBytesResponse)
+					{
+						throw new InvalidOperationException("Putbytes failed");
+					}
+				}
+
+				//TODO: add worker to manifest and transfer it if necassary
+				//if (bundle.HasWorker)
+				//{
+					//await PutBytesV3(bundle.Worker, TransferType.Worker, runStateResult.AppId);
+				//}
+
+			}
+			else 
+			{
+				throw new DataMisalignedException("BlobDB Insert Failed");
+			}
 		}
 
 		private async Task InstallAppLegacyV2(AppBundle bundle, IProgress<ProgressValue> progress= null)
@@ -279,14 +325,14 @@ namespace PebbleSharp.Core
 			if ( progress != null )
 				progress.Report( new ProgressValue( "Transferring app to Pebble", 40 ) );
 
-			if ( await PutBytes( bundle.App, firstFreeIndex, TransferType.Binary ) == false )
+			if ( await PutBytes( bundle.App, TransferType.Binary,index:firstFreeIndex ) == false )
 				throw new PebbleException( "Failed to send application binary pebble-app.bin" );
 
 			if ( bundle.HasResources )
 			{
 				if ( progress != null )
 					progress.Report( new ProgressValue( "Transferring app resources to Pebble", 60 ) );
-				if ( await PutBytes( bundle.Resources, firstFreeIndex, TransferType.Resources ) == false )
+				if ( await PutBytes( bundle.Resources, TransferType.Resources,index:firstFreeIndex ) == false )
 					throw new PebbleException( "Failed to send application resources app_resources.pbpack" );
 			}
 
@@ -314,7 +360,7 @@ namespace PebbleSharp.Core
             {
                 if ( progress != null )
                     progress.Report( new ProgressValue( "Transfering firmware resources", 25 ) );
-                if ( await PutBytes( bundle.Resources, 0, TransferType.SysResources ) == false )
+				if ( await PutBytes( bundle.Resources, TransferType.SysResources,index:0 ) == false )
                 {
                     return false;
                 }
@@ -322,7 +368,7 @@ namespace PebbleSharp.Core
 
             if ( progress != null )
                 progress.Report( new ProgressValue( "Transfering firmware", 50 ) );
-            if ( await PutBytes( bundle.Firmware, 0, TransferType.Firmware ) == false )
+			if ( await PutBytes( bundle.Firmware, TransferType.Firmware,index:0 ) == false )
             {
                 return false;
             }
@@ -454,7 +500,7 @@ namespace PebbleSharp.Core
 				if (e.Endpoint == (ushort)Endpoint.PhoneVersion)
 				{
 					var message = new AppVersionResponse();
-					SendMessageNoResponseAsync( Endpoint.PhoneVersion, message.GetBytes() ).Wait();
+					SendMessageNoResponseAsync(Endpoint.PhoneVersion, message.GetBytes()).Wait();
 				}
 
 
@@ -541,20 +587,46 @@ namespace PebbleSharp.Core
             return await SendMessageAsync<AppbankInstallResponse>( Endpoint.AppManager, data );
         }
 
-        private async Task<bool> PutBytes( byte[] binary, byte index, TransferType transferType)
+		private async Task<bool> PutBytes( byte[] binary, TransferType transferType,byte index=byte.MaxValue,int appInstallId=int.MinValue)
         {
+			System.Console.WriteLine("Putting " + binary.Length + " bytes");
             byte[] length = Util.GetBytes( binary.Length );
 
 			//Get token
 			byte[] header;
 
-			header = Util.CombineArrays(new byte[] { 1 }, length, new[] { (byte)transferType, index });
+			if (index != byte.MaxValue)
+			{
+				System.Console.WriteLine("index: " + index);
+				header = Util.CombineArrays(new byte[] { (byte)PutBytesType.Init }, length, new[] { (byte)transferType, index });
+			}
+			else if (appInstallId != int.MinValue)
+			{
+				System.Console.WriteLine("AppId: " + appInstallId);
+				byte hackedTransferType = (byte)transferType;
+				hackedTransferType |= (1 << 7); //just put that bit anywhere...
+				header = Util.CombineArrays(new byte[] { ((byte)PutBytesType.Init) }, length, new[] { hackedTransferType},BitConverter.GetBytes(appInstallId));
+			}
+			else 
+			{
+				throw new ArgumentException("Must specifiy either index or appInstallId");
+			}
+
 
             var rawMessageArgs = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, header );
-            if ( rawMessageArgs.Success == false )
-                return false;
+			if (rawMessageArgs.Success == false)
+			{
+				return false;
+			}
 
             byte[] tokenResult = rawMessageArgs.Response;
+			System.Console.Write("Token: ");
+			foreach (var t in tokenResult)
+			{
+				System.Console.Write(t + ",");
+
+			}
+			System.Console.WriteLine("");
             byte[] token = tokenResult.Skip( 1 ).ToArray();
 
             const int BUFFER_SIZE = 2000;
@@ -562,7 +634,7 @@ namespace PebbleSharp.Core
             for ( int i = 0; i <= binary.Length / BUFFER_SIZE; i++ )
             {
                 byte[] data = binary.Skip( BUFFER_SIZE * i ).Take( BUFFER_SIZE ).ToArray();
-                byte[] dataHeader = Util.CombineArrays( new byte[] { 2 }, token, Util.GetBytes( data.Length ) );
+				byte[] dataHeader = Util.CombineArrays( new byte[] { (byte)PutBytesType.Put }, token, Util.GetBytes( data.Length ) );
                 var result = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, Util.CombineArrays( dataHeader, data ) );
                 if ( result.Success == false )
                 {
@@ -574,7 +646,7 @@ namespace PebbleSharp.Core
             //Send commit message
             uint crc = Crc32.Calculate( binary );
             byte[] crcBytes = Util.GetBytes( crc );
-            byte[] commitMessage = Util.CombineArrays( new byte[] { 3 }, token, crcBytes );
+			byte[] commitMessage = Util.CombineArrays( new byte[] { (byte)PutBytesType.Commit }, token, crcBytes );
             var commitResult = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, commitMessage );
             if ( commitResult.Success == false )
             {
@@ -584,7 +656,7 @@ namespace PebbleSharp.Core
 
 
             //Send complete message
-            byte[] completeMessage = Util.CombineArrays( new byte[] { 5 }, token );
+			byte[] completeMessage = Util.CombineArrays( new byte[] { (byte)PutBytesType.Install }, token );
             var completeResult = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, completeMessage );
             if ( completeResult.Success == false )
             {
@@ -593,63 +665,12 @@ namespace PebbleSharp.Core
             return completeResult.Success;
         }
 
-		private async Task<bool> PutBytesV3( byte[] binary, TransferType transferType, byte app_install_id )
-		{
-			byte[] length = Util.GetBytes( binary.Length );
-
-			//Get token
-			byte[] header;
-
-			header = Util.CombineArrays(new byte[] { 1 }, length, new byte[] { (byte)transferType,0,0,0, app_install_id });
-
-			var rawMessageArgs = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, header );
-			if ( rawMessageArgs.Success == false )
-				return false;
-
-			byte[] tokenResult = rawMessageArgs.Response;
-			byte[] token = tokenResult.Skip( 1 ).ToArray();
-
-			const int BUFFER_SIZE = 2000;
-			//Send at most 2000 bytes at a time
-			for ( int i = 0; i <= binary.Length / BUFFER_SIZE; i++ )
-			{
-				byte[] data = binary.Skip( BUFFER_SIZE * i ).Take( BUFFER_SIZE ).ToArray();
-				byte[] dataHeader = Util.CombineArrays( new byte[] { 2 }, token, Util.GetBytes( data.Length ) );
-				var result = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, Util.CombineArrays( dataHeader, data ) );
-				if ( result.Success == false )
-				{
-					await AbortPutBytesAsync( token );
-					return false;
-				}
-			}
-
-			//Send commit message
-			uint crc = Crc32.Calculate( binary );
-			byte[] crcBytes = Util.GetBytes( crc );
-			byte[] commitMessage = Util.CombineArrays( new byte[] { 3 }, token, crcBytes );
-			var commitResult = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, commitMessage );
-			if ( commitResult.Success == false )
-			{
-				await AbortPutBytesAsync( token );
-				return false;
-			}
-
-
-			//Send complete message
-			byte[] completeMessage = Util.CombineArrays( new byte[] { 5 }, token );
-			var completeResult = await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, completeMessage );
-			if ( completeResult.Success == false )
-			{
-				await AbortPutBytesAsync( token );
-			}
-			return completeResult.Success;
-		}
 
         private async Task<PutBytesResponse> AbortPutBytesAsync( byte[] token )
         {
             if ( token == null ) throw new ArgumentNullException( "token" );
 
-            byte[] data = Util.CombineArrays( new byte[] { 4 }, token );
+			byte[] data = Util.CombineArrays( new byte[] { (byte)PutBytesType.Abort }, token );
 
             return await SendMessageAsync<PutBytesResponse>( Endpoint.PutBytes, data );
         }
@@ -685,25 +706,5 @@ namespace PebbleSharp.Core
             }
         }
 
-        private enum TransferType : byte
-        {
-            Firmware = 1,
-            Recovery = 2,
-            SysResources = 3,
-            Resources = 4,
-            Binary = 5
-        }
-
-        private enum SystemMessage : byte
-        {
-            FirmwareAvailible = 0,
-            FirmwareStart = 1,
-            FirmwareComplete = 2,
-            FirmwareFail = 3,
-            FirmwareUpToDate = 4,
-            FirmwareOutOfDate = 5,
-            BluetoothStartDiscoverable = 6,
-            BluetoothEndDiscoverable = 7
-        }
     }
 }

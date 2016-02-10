@@ -8,6 +8,7 @@ using PebbleSharp.Core;
 using PebbleSharp.Core.Responses;
 using PebbleSharp.Mono.BlueZ5;
 using PebbleSharp.Core.Bundles;
+using PebbleSharp.Core.BlobDB;
 using PebbleSharp.Core.NonPortable.AppMessage;
 
 namespace PebbleCmd
@@ -159,10 +160,11 @@ namespace PebbleCmd
                                     bundle.Load(stream, zip);
                                     var task = pebble.InstallAppAsync(bundle, progress);
                                     await task;
-                                    Console.WriteLine("App Installed, launching...");
-									var uuid=new UUID(bundle.AppInfo.UUID);
-									pebble.LaunchApp(uuid);
-									Console.WriteLine ("Launched");
+
+                                    //Console.WriteLine("App Installed, launching...");
+									//var uuid=new UUID(bundle.AppInfo.UUID);
+									//pebble.LaunchApp(uuid);
+									//Console.WriteLine ("Launched");
                                 }
                             }
                         }
@@ -312,63 +314,7 @@ namespace PebbleCmd
 
 		private static void TestBlobDB(Pebble pebble)
 		{
-			string appPath = SelectApp();
-
-			if (!string.IsNullOrEmpty(appPath) && File.Exists(appPath))
-			{
-				using (var stream = new FileStream(appPath, FileMode.Open))
-				{
-					using (var zip = new Zip())
-					{
-						zip.Open(stream);
-						var bundle = new AppBundle();
-						stream.Position = 0;
-						bundle.Load(stream, zip);
-
-						var meta = new PebbleSharp.Core.BlobDB.AppMetaData();
-						meta.AppFaceTemplateId = 0;
-						meta.AppFaceBackgroundColor = 0;
-						meta.AppVersionMajor = bundle.AppMetadata.AppMajorVersion;
-						meta.AppVersionMinor = bundle.AppMetadata.AppMinorVersion;
-						meta.SdkVersionMajor = bundle.AppMetadata.SDKMajorVersion;
-						meta.SdkVersionMinor = bundle.AppMetadata.SDKMinorVersion;
-						meta.Flags = bundle.AppMetadata.Flags;
-						meta.Icon = bundle.AppMetadata.IconResourceID;
-						meta.UUID = bundle.AppMetadata.UUID;
-						meta.Name = bundle.AppMetadata.AppName;
-
-						var bytes = meta.GetBytes();
-						var task = pebble.BlobDBClient.Insert(BlobDatabase.App, meta.UUID.Data, bytes);
-						task.Wait();
-						var result = task.Result;
-
-						if (result.Response == BlobStatus.Success)
-						{
-							System.Console.WriteLine("Insert Success, Deleting...");
-							task = pebble.BlobDBClient.Delete(BlobDatabase.App, meta.UUID.Data);
-							task.Wait();
-							result = task.Result;
-
-							if (result.Response == BlobStatus.Success)
-							{
-								System.Console.WriteLine("Delete Success");
-							}
-							else
-							{
-								System.Console.WriteLine("Delete Failed: " + result.Response);
-							}
-						}
-						else
-						{
-							System.Console.WriteLine("Insert Failed:" + result.Response.ToString()+" with token "+result.Token);
-						}
-					}
-				}
-			}
-			else
-			{
-				Console.WriteLine("No .pbw");
-			}
+			
 		}
         
 

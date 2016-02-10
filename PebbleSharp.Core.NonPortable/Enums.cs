@@ -46,6 +46,7 @@ namespace PebbleSharp.Core
 		SysReg = 5000,
 		FctReg = 5001,
 		AppManager = 6000,
+		AppFetch = 6001,
 		RunKeeper = 7000,
 		PutBytes = 48879,
 		DataLog = 6778,
@@ -54,27 +55,6 @@ namespace PebbleSharp.Core
 		MaxEndpoint = 65535, //ushort.MaxValue
 
 	}
-
-	[Flags]
-    public enum RemoteCaps : uint
-    {
-        Unknown = 0,
-        IOS = 1,
-        Android = 2,
-        OSX = 3,
-        Linux = 4,
-        Windows = 5,
-        Telephony = 16,
-        SMS = 32,
-        GPS = 64,
-        BTLE = 128,
-        // 240? No, that doesn't make sense.  But it's apparently true.
-        CameraFront = 240,
-        CameraRear = 256,
-        Accelerometer = 512,
-        Gyro = 1024,
-        Compass = 2048
-    }
 
     public enum LogLevel
     {
@@ -121,5 +101,53 @@ namespace PebbleSharp.Core
 		Insert=0x01,
 		Delete=0x04,
 		Clear=0x05,
+	}
+
+	public enum AppRunState : byte
+	{
+		Start=0x01,
+		Stop=0x02,
+		Request=0x03,
+	}
+
+	public enum AppFetchStatus : byte
+	{
+		Start = 0x01,
+		Busy = 0x02,
+		InvalidUUID = 0x03,
+		NoData = 0x04
+	}
+
+
+	public enum TransferType : byte
+	{
+		Firmware = 1,
+		Recovery = 2,
+		SysResources = 3,
+		Resources = 4,
+		Binary = 5,
+		File=6,
+		Worker=7
+	}
+
+	public enum SystemMessage : byte
+	{
+		FirmwareAvailible = 0,
+		FirmwareStart = 1,
+		FirmwareComplete = 2,
+		FirmwareFail = 3,
+		FirmwareUpToDate = 4,
+		FirmwareOutOfDate = 5,
+		BluetoothStartDiscoverable = 6,
+		BluetoothEndDiscoverable = 7
+	}
+
+	public enum PutBytesType : byte
+	{
+		Init=0x01,
+		Put=0x02,
+		Commit=0x03,
+		Abort=0x04,
+		Install=0x05,
 	}
 }
