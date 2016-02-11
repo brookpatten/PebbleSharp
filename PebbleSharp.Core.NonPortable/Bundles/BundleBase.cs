@@ -10,37 +10,23 @@ namespace PebbleSharp.Core.Bundles
         public virtual bool HasResources { get; private set; }
         public BundleManifest Manifest { get; private set; }
         public virtual byte[] Resources { get; private set; }
+		public Platform Platform { get; private set;}
 
         protected abstract void LoadData(IZip zip);
 
-		protected string PlatformSubdirectory = "";
+		protected string PlatformSubdirectory()
+		{
+			var platformSubdirectory = (Platform == Platform.UNKNOWN ? "" : Platform.ToString().ToLower()+"/");
+			System.Console.WriteLine("Platform Subdir:" + platformSubdirectory);
+			return platformSubdirectory;
+		}
 
 		private BundleManifest LoadManifest(IZip zip)
 		{
-			Stream manifestStream = null;
-
-			try{
-				PlatformSubdirectory="";
-				manifestStream = zip.OpenEntryStream("manifest.json");
-				if(manifestStream==null)
-				{
-					PlatformSubdirectory="basalt";
-					manifestStream = zip.OpenEntryStream(PlatformSubdirectory+"/manifest.json");
-				}
-				if(manifestStream==null)
-				{
-					PlatformSubdirectory="";
-					throw new InvalidOperationException("manifest.json not found in archive - not a valid Pebble bundle.");
-				}
+			using (var manifestStream = zip.OpenEntryStream(PlatformSubdirectory() + "manifest.json"))
+			{
 				var serializer = new DataContractJsonSerializer(typeof(BundleManifest));
 				return (BundleManifest)serializer.ReadObject(manifestStream);
-			}
-			finally
-			{
-				if(manifestStream!=null)
-				{
-					manifestStream.Dispose();
-				}
 			}
 		}
 
@@ -49,8 +35,9 @@ namespace PebbleSharp.Core.Bundles
         /// </summary>
         /// <param name="bundle">The stream to the bundle.</param>
         /// <param name="zip">The zip library implementation.</param>
-        public void Load(Stream bundle, IZip zip)
+		public void Load(Stream bundle, IZip zip, Platform platform)
         {
+			Platform = platform;
             //TODO: This needs to be refactored, probably put into a Load method
             if (false == zip.Open(bundle))
                 throw new InvalidOperationException("Failed to open pebble bundle");
@@ -61,7 +48,7 @@ namespace PebbleSharp.Core.Bundles
 
             if (HasResources)
             {
-				using (Stream resourcesBinary = zip.OpenEntryStream(PlatformSubdirectory+"/"+Manifest.Resources.Filename))
+				using (Stream resourcesBinary = zip.OpenEntryStream(PlatformSubdirectory()+Manifest.Resources.Filename))
                 {
                     if (resourcesBinary == null)
                         throw new PebbleException("Could not find resource entry in the bundle");

@@ -19,6 +19,7 @@ namespace PebbleSharp.Core
     /// </summary>
     public abstract class Pebble
     {
+		public Hardware Hardware { get; private set;}
 		private readonly PebbleProtocol _PebbleProt;
 
         private readonly Dictionary<Type, List<CallbackContainer>> _callbackHandlers;
@@ -36,7 +37,7 @@ namespace PebbleSharp.Core
         /// </param>
         protected Pebble( IBluetoothConnection connection, string pebbleId )
         {
-            ResponseTimeout = TimeSpan.FromSeconds( 5 );
+			ResponseTimeout = TimeSpan.FromSeconds( 5 );
             PebbleID = pebbleId;
 			this.BlobDBClient = new BlobDBClient(this);
 
@@ -91,6 +92,12 @@ namespace PebbleSharp.Core
             {
                 Disconnect();
             }
+
+			//go ahead and get the firmware info
+			//TODO: store all this somewhere, we'll probably want the version etc too
+			var firmware = await this.GetFirmwareVersionAsync();
+			this.Hardware = (Hardware)firmware.Firmware.HardwarePlatform;
+			System.Console.WriteLine("Connected platform " + this.Hardware.GetPlatform());
         }
 
         /// <summary>
@@ -264,7 +271,7 @@ namespace PebbleSharp.Core
 					throw new InvalidOperationException("The pebble requested the wrong UUID");
 				}
 
-				var putBytesResponse = await PutBytes(bundle.App, TransferType.Binary, appInstallId:runStateResult.AppId);
+				var putBytesResponse = await PutBytes(bundle.App, TransferType.Binary, appInstallId:(uint)runStateResult.AppId);
 				if (!putBytesResponse)
 				{
 					throw new InvalidOperationException("Putbytes failed");
@@ -273,7 +280,7 @@ namespace PebbleSharp.Core
 
 				if (bundle.HasResources)
 				{
-					putBytesResponse = await PutBytes(bundle.Resources, TransferType.Resources, appInstallId:runStateResult.AppId);
+					putBytesResponse = await PutBytes(bundle.Resources, TransferType.Resources, appInstallId:(uint)runStateResult.AppId);
 					if (!putBytesResponse)
 					{
 						throw new InvalidOperationException("Putbytes failed");
@@ -488,8 +495,8 @@ namespace PebbleSharp.Core
 			var endpoint = (Endpoint)e.Endpoint;
 			IResponse response = _responseManager.HandleResponse( endpoint, e.Payload );
 
-            if ( response != null )
-            {
+			if (response != null)
+			{
 				if (e.Endpoint == (ushort)Endpoint.BlobDB)
 				{
 					var blobDbPacket = new BlobDBResponse();
@@ -503,9 +510,16 @@ namespace PebbleSharp.Core
 					SendMessageNoResponseAsync(Endpoint.PhoneVersion, message.GetBytes()).Wait();
 				}
 
+				if (e.Endpoint == (ushort)Endpoint.PutBytes)
+				{
+					var message = new PutBytesResponse();
+					message.SetPayload(e.Payload);
+					System.Console.WriteLine("PutBytes Response: " + message.Success);
+				}
 
-                //Check for callbacks
-                List<CallbackContainer> callbacks;
+
+				//Check for callbacks
+				List<CallbackContainer> callbacks;
 				if (_callbackHandlers.TryGetValue(response.GetType(), out callbacks))
 				{
 					foreach (CallbackContainer callback in callbacks)
@@ -513,7 +527,7 @@ namespace PebbleSharp.Core
 				}
 				else
 				{
-					Console.WriteLine("Received message with no callback on endpoint "+e.Endpoint);
+					Console.WriteLine("Received message with no callback on endpoint " + e.Endpoint);
 					//if (endpoint == Endpoint.DataLog)
 					{
 						var log = System.Text.UTF8Encoding.UTF8.GetString(e.Payload);
@@ -521,7 +535,15 @@ namespace PebbleSharp.Core
 					}
 
 				}
-            }
+			}
+			else
+			{
+				Console.WriteLine("Received message with no response on endpoint " + e.Endpoint);
+				{
+					var log = System.Text.UTF8Encoding.UTF8.GetString(e.Payload);
+					Console.WriteLine(log);
+				}
+			}
         }
 
 		public async Task<BlobDBResponse> SendBlobDBMessage(BlobDBCommand command)
@@ -587,7 +609,7 @@ namespace PebbleSharp.Core
             return await SendMessageAsync<AppbankInstallResponse>( Endpoint.AppManager, data );
         }
 
-		private async Task<bool> PutBytes( byte[] binary, TransferType transferType,byte index=byte.MaxValue,int appInstallId=int.MinValue)
+		private async Task<bool> PutBytes( byte[] binary, TransferType transferType,byte index=byte.MaxValue,uint appInstallId=uint.MinValue)
         {
 			System.Console.WriteLine("Putting " + binary.Length + " bytes");
             byte[] length = Util.GetBytes( binary.Length );
@@ -600,7 +622,7 @@ namespace PebbleSharp.Core
 				System.Console.WriteLine("index: " + index);
 				header = Util.CombineArrays(new byte[] { (byte)PutBytesType.Init }, length, new[] { (byte)transferType, index });
 			}
-			else if (appInstallId != int.MinValue)
+			else if (appInstallId != uint.MinValue)
 			{
 				System.Console.WriteLine("AppId: " + appInstallId);
 				byte hackedTransferType = (byte)transferType;

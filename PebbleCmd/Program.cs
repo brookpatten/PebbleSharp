@@ -31,7 +31,7 @@ namespace PebbleCmd
 				var manager = new PebbleManager();
                 Console.WriteLine("PebbleCmd");
                 Console.WriteLine("Discovering and Pairing Pebbles");
-				var pebbles = manager.Detect("hci0",true);
+				var pebbles = manager.Detect("hci0",false);
 				Console.WriteLine("Select Pebble to connect to:");
                 if (pebbles != null && pebbles.Any())
                 {
@@ -157,9 +157,10 @@ namespace PebbleCmd
                                     zip.Open(stream);
                                     var bundle = new AppBundle();
                                     stream.Position = 0;
-                                    bundle.Load(stream, zip);
+									bundle.Load(stream, zip,pebble.Hardware.GetPlatform());
                                     var task = pebble.InstallAppAsync(bundle, progress);
                                     await task;
+									await pebble.LaunchApp(bundle.AppMetadata.UUID);
 
                                     //Console.WriteLine("App Installed, launching...");
 									//var uuid=new UUID(bundle.AppInfo.UUID);

@@ -145,6 +145,7 @@ namespace PebbleSharp.Mono.BlueZ5
 
 								try
 								{
+									System.Console.WriteLine("Attempting connection to " + obj);
 									if (!device.Paired)
 									{
 										device.Pair ();

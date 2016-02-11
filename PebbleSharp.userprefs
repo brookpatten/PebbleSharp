@@ -1,14 +1,16 @@
 ﻿<Properties StartupItem="PebbleCmd/PebbleCmd.csproj">
   <MonoDevelop.Ide.ItemProperties.PebbleCmd PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleSharp.Core.NonPortable/Pebble.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Mono.BlueZ/dbus-sharp/src/Protocol/PendingCall.cs">
     <Files>
-      <File FileName="PebbleCmd/Program.cs" Line="58" Column="36" />
-      <File FileName="PebbleSharp.Core.NonPortable/Pebble.cs" Line="611" Column="5" />
+      <File FileName="PebbleCmd/Program.cs" Line="39" Column="6" />
+      <File FileName="PebbleSharp.Core.NonPortable/Pebble.cs" Line="320" Column="39" />
       <File FileName="PebbleSharp.Core.NonPortable/Bundles/AppBundle.cs" Line="10" Column="23" />
       <File FileName="PebbleSharp.Core.NonPortable/Bundles/BundleBase.cs" Line="59" Column="4" />
       <File FileName="PebbleSharp.Core.NonPortable/BundleManifest.cs" Line="36" Column="65" />
       <File FileName="PebbleSharp.Core.NonPortable/Apps/AppFetchRequestPacket.cs" Line="10" Column="12" />
       <File FileName="PebbleSharp.Core.NonPortable/Responses/PutBytesResponse.cs" Line="4" Column="18" />
+      <File FileName="PebbleSharp.Mono.BlueZ5/PebbleManager.cs" Line="144" Column="5" />
+      <File FileName="Mono.BlueZ/dbus-sharp/src/Protocol/PendingCall.cs" Line="42" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -23,6 +25,7 @@
       <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="270" column="1" />
       <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="279" column="1" />
       <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="619" column="1" />
+      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="665" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

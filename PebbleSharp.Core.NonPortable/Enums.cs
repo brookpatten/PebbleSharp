@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PebbleSharp.Core
 {
@@ -149,5 +150,70 @@ namespace PebbleSharp.Core
 		Commit=0x03,
 		Abort=0x04,
 		Install=0x05,
+	}
+
+	public enum Hardware:byte
+	{
+		UNKNOWN = 0,
+		TINTIN_EV1 = 1,
+		TINTIN_EV2 = 2,
+		TINTIN_EV2_3 = 3,
+		TINTIN_EV2_4 = 4,
+		TINTIN_V1_5 = 5,
+		BIANCA = 6,
+		SNOWY_EVT2 = 7,
+		SNOWY_DVT = 8,
+		SPALDING_EVT = 9,
+		BOBBY_SMILES = 10,
+		SPALDING = 11,
+		TINTIN_BB = 0xFF,
+		TINTIN_BB2 = 0xFE,
+		SNOWY_BB = 0xFD,
+		SNOWY_BB2 = 0xFC,
+		SPALDING_BB2 = 0xFB,
+	}
+
+	public enum Platform : byte
+	{
+		UNKNOWN,
+		APLITE,
+		BASALT,
+		CHALK
+	}
+
+	public static class HardwareHelpers
+	{
+		private static Dictionary<Hardware, Platform> Platforms;
+
+		private static void Initialize()
+		{
+			if (Platforms == null)
+			{
+				Platforms = new Dictionary<Hardware, Platform>();
+				Platforms.Add(Hardware.UNKNOWN, Platform.UNKNOWN);
+				Platforms.Add(Hardware.TINTIN_EV1, Platform.APLITE);
+				Platforms.Add(Hardware.TINTIN_EV2,Platform.APLITE);
+				Platforms.Add(Hardware.TINTIN_EV2_3, Platform.APLITE);
+				Platforms.Add(Hardware.TINTIN_EV2_4,Platform.APLITE);
+				Platforms.Add(Hardware.TINTIN_V1_5,Platform.APLITE);
+				Platforms.Add(Hardware.BIANCA,Platform.APLITE);
+				Platforms.Add(Hardware.SNOWY_EVT2,Platform.BASALT);
+				Platforms.Add(Hardware.SNOWY_DVT,Platform.BASALT);
+				Platforms.Add(Hardware.BOBBY_SMILES,Platform.BASALT);
+				Platforms.Add(Hardware.SPALDING_EVT,Platform.CHALK);
+				Platforms.Add(Hardware.SPALDING,Platform.CHALK);
+				Platforms.Add(Hardware.TINTIN_BB,Platform.APLITE);
+				Platforms.Add(Hardware.TINTIN_BB2,Platform.APLITE);
+				Platforms.Add(Hardware.SNOWY_BB,Platform.BASALT);
+				Platforms.Add(Hardware.SNOWY_BB2,Platform.BASALT);
+				Platforms.Add(Hardware.SPALDING_BB2,Platform.CHALK);
+			}
+		}
+
+		public static Platform GetPlatform(this Hardware hardware)
+		{
+			Initialize();
+			return Platforms[hardware];
+		}
 	}
 }

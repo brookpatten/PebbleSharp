@@ -17,7 +17,7 @@ namespace PebbleSharp.Core.Bundles
             if ( string.IsNullOrWhiteSpace( Manifest.Application.Filename ) )
                 throw new InvalidOperationException( "Bundle does not contain pebble app" );
 
-			using ( Stream binStream = zip.OpenEntryStream( this.PlatformSubdirectory+"/"+Manifest.Application.Filename ) )
+			using ( Stream binStream = zip.OpenEntryStream( this.PlatformSubdirectory()+Manifest.Application.Filename ) )
             {
                 if ( binStream == null )
                     throw new Exception( string.Format( "App file {0} not found in archive", Manifest.Application.Filename ) );
