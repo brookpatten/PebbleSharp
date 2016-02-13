@@ -59,6 +59,7 @@ namespace PebbleSharp.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the payload is too large.</exception>
         public void SendMessage( ushort endpoint, byte[] payload )
         {
+			Console.WriteLine("SEND:" + ((Endpoint)endpoint).ToString()+"["+payload.Length+"]");
             if ( payload.Length > 2048 )
             {
                 throw new ArgumentOutOfRangeException( "payload",
@@ -117,6 +118,7 @@ namespace PebbleSharp.Core
                     {
                         // All of the payload's been received, so read it.
                         var buffer = ReadBytes( _CurrentPayloadSize );
+						Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint).ToString()+"["+buffer.Length+"]");
                         RawMessageReceived( this, new RawMessageReceivedEventArgs( _CurrentEndpoint, buffer ) );
                         // Reset state
                         _WaitingState = WaitingStates.NewMessage;

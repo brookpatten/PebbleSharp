@@ -1,16 +1,17 @@
 ﻿<Properties StartupItem="PebbleCmd/PebbleCmd.csproj">
   <MonoDevelop.Ide.ItemProperties.PebbleCmd PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Mono.BlueZ/dbus-sharp/src/Protocol/PendingCall.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleSharp.Core.NonPortable/Pebble.cs">
     <Files>
-      <File FileName="PebbleCmd/Program.cs" Line="39" Column="6" />
-      <File FileName="PebbleSharp.Core.NonPortable/Pebble.cs" Line="320" Column="39" />
-      <File FileName="PebbleSharp.Core.NonPortable/Bundles/AppBundle.cs" Line="10" Column="23" />
-      <File FileName="PebbleSharp.Core.NonPortable/Bundles/BundleBase.cs" Line="59" Column="4" />
+      <File FileName="PebbleCmd/Program.cs" Line="132" Column="65" />
+      <File FileName="PebbleSharp.Core.NonPortable/Pebble.cs" Line="107" Column="10" />
+      <File FileName="PebbleSharp.Core.NonPortable/Bundles/AppBundle.cs" Line="20" Column="79" />
+      <File FileName="PebbleSharp.Core.NonPortable/Bundles/BundleBase.cs" Line="22" Column="4" />
       <File FileName="PebbleSharp.Core.NonPortable/BundleManifest.cs" Line="36" Column="65" />
       <File FileName="PebbleSharp.Core.NonPortable/Apps/AppFetchRequestPacket.cs" Line="10" Column="12" />
-      <File FileName="PebbleSharp.Core.NonPortable/Responses/PutBytesResponse.cs" Line="4" Column="18" />
       <File FileName="PebbleSharp.Mono.BlueZ5/PebbleManager.cs" Line="144" Column="5" />
       <File FileName="Mono.BlueZ/dbus-sharp/src/Protocol/PendingCall.cs" Line="42" Column="5" />
+      <File FileName="PebbleSharp.Core.NonPortable/Enums.cs" Line="162" Column="14" />
+      <File FileName="PebbleSharp.Core.NonPortable/Bundles/FirmwareBundle.cs" Line="19" Column="10" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -19,13 +20,9 @@
       <Breakpoint file="/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/Net.Bluetooth_Sdp2/ServiceRecordUtilities.cs" line="475" column="1" />
       <Breakpoint file="/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/Net.Bluetooth_Sdp2/ServiceRecordHelper.cs" line="110" column="1" />
       <Breakpoint file="/home/pi/dev/PebbleSharp/InTheHand.Net.Personal/Net.Bluetooth.BlueZ/BluezSdpQuery.cs" line="250" column="1" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="318" column="1" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="328" column="35" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="91" column="1" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="270" column="1" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="279" column="1" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="619" column="1" />
-      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="665" column="1" />
+      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="277" column="1" />
+      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="286" column="1" />
+      <Breakpoint file="/home/brook/Documents/Development/mrgibbs/src/lib/PebbleSharp/PebbleSharp.Core.NonPortable/Pebble.cs" line="626" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

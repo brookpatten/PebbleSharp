@@ -158,9 +158,12 @@ namespace PebbleCmd
                                     var bundle = new AppBundle();
                                     stream.Position = 0;
 									bundle.Load(stream, zip,pebble.Hardware.GetPlatform());
-                                    var task = pebble.InstallAppAsync(bundle, progress);
+                                    var task = pebble.InstallClient.InstallAppAsync(bundle, progress);
                                     await task;
-									await pebble.LaunchApp(bundle.AppMetadata.UUID);
+									if (task.IsFaulted)
+									{
+										Console.WriteLine("Failed to install");
+									}
 
                                     //Console.WriteLine("App Installed, launching...");
 									//var uuid=new UUID(bundle.AppInfo.UUID);
@@ -181,37 +184,35 @@ namespace PebbleCmd
 
                         if (!string.IsNullOrEmpty(uuidAppPath) && File.Exists(uuidAppPath))
                         {
+							using (var stream = new FileStream(uuidAppPath, FileMode.Open))
+							{
+								using (var zip = new Zip())
+								{
+									zip.Open(stream);
+									var bundle = new AppBundle();
+									stream.Position = 0;
+									bundle.Load(stream, zip,pebble.Hardware.GetPlatform());
 
 
-                            UUID uuid = new UUID("22a27b9a-0b07-47af-ad87-b2c29305bab6") ;
-                            //using (var stream = new FileStream(uuidAppPath, FileMode.Open))
-                            //{
-                            //    using (var zip = new Zip())
-                            //    {
-                            //        zip.Open(stream);
-                            //        var bundle = new AppBundle();
-                            //        stream.Position = 0;
-                            //        bundle.Load(stream, zip);
-                            //        uuid = bundle.AppMetadata.UUID;
-                            //    }
-                            //}
+									//format a message
+									var rand = new Random().Next();
+									AppMessageDictionary message = new AppMessageDictionary();
+									message.Values.Add(new AppMessageUInt32() { Value = (uint)rand });
+									message.Values.Add(new AppMessageString() { Value = "Hello from .net" });
+									message.ApplicationId = bundle.AppMetadata.UUID;
+									message.TransactionId = 255;
+
+
+									//send it
+									Console.WriteLine("Sending Status "+rand+" to " + bundle.AppMetadata.UUID.ToString());
+									var t = pebble.SendApplicationMessage(message);
+									await t;
+									Console.WriteLine("Response received");
+								}
+							}
 
 
 
-                            //format a message
-                            var rand = new Random().Next();
-                            AppMessageDictionary message = new AppMessageDictionary();
-                            message.Values.Add(new AppMessageUInt32() { Value = (uint)rand });
-                            message.Values.Add(new AppMessageString() { Value = "Hello from .net" });
-                            message.ApplicationId = uuid;
-                            message.TransactionId = 255;
-
-
-                            //send it
-                            Console.WriteLine("Sending Status "+rand+" to " + uuid.ToString());
-                            var t = pebble.SendApplicationMessage(message);
-                            await t;
-                            Console.WriteLine("Response received");
                         }
                         else
                         {

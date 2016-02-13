@@ -95,10 +95,14 @@
     <Compile Include="Apps\AppRunStatePacket.cs" />
     <Compile Include="Apps\AppFetchRequestPacket.cs" />
     <Compile Include="Apps\AppFetchResponsePacket.cs" />
+    <Compile Include="PutBytes\PutBytesClient.cs" />
+    <Compile Include="Install\InstallClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BlobDB\" />
     <Folder Include="Apps\" />
+    <Folder Include="PutBytes\" />
+    <Folder Include="Install\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
