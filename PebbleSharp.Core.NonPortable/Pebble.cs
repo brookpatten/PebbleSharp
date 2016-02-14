@@ -51,8 +51,7 @@ namespace PebbleSharp.Core
             _PebbleProt = new PebbleProtocol( connection );
             _PebbleProt.RawMessageReceived += RawMessageReceived;
 
-            RegisterCallback<ApplicationMessageResponse>( OnApplicationMessageReceived );
-
+			RegisterCallback<AppMessagePacket>( OnApplicationMessageReceived );
         }
 
         /// <summary>
@@ -349,25 +348,25 @@ namespace PebbleSharp.Core
 
         }
 
-		public async Task<BlobDBResponse> SendBlobDBMessage(BlobDBCommand command)
+		public async Task<BlobDBResponsePacket> SendBlobDBMessage(BlobDBCommandPacket command)
 		{
 			//TODO: I'm not sure we should assume that the first blobdb response we get is the one that 
 			//corresponds to this request, we probably need to do extra work here to match up the token
 			var bytes = command.GetBytes();
 
-			return await SendMessageAsync<BlobDBResponse>(Endpoint.BlobDB,bytes );
+			return await SendMessageAsync<BlobDBResponsePacket>(Endpoint.BlobDB,bytes );
 		}
 
-        public async Task<ApplicationMessageResponse> SendApplicationMessage(AppMessageDictionary data)
+		public async Task<AppMessagePacket> SendApplicationMessage(AppMessagePacket data)
         {
             //DebugMessage(data.GetBytes());
-            return await SendMessageAsync<ApplicationMessageResponse>(Endpoint.ApplicationMessage, data.GetBytes());
+			return await SendMessageAsync<AppMessagePacket>(Endpoint.ApplicationMessage, data.GetBytes());
         }
 
         //self._pebble.send_packet(AppRunState(data=AppRunStateStart(uuid=app_uuid)))
         public async Task LaunchApp(UUID uuid)
         {
-            var data = new AppMessageDictionary();
+            var data = new AppMessagePacket();
             data.ApplicationId = uuid;
             data.Command = (byte)Command.Push;
             data.TransactionId = 1;
@@ -376,9 +375,9 @@ namespace PebbleSharp.Core
             await SendMessageNoResponseAsync(Endpoint.Launcher, data.GetBytes());
         }
 
-        private void OnApplicationMessageReceived( ApplicationMessageResponse response )
+		private void OnApplicationMessageReceived( AppMessagePacket response )
         {
-            SendMessageNoResponseAsync( Endpoint.ApplicationMessage, new byte[] { 0xFF, response.Dictionary!=null ? response.Dictionary.TransactionId :(byte)0} );
+            SendMessageNoResponseAsync( Endpoint.ApplicationMessage, new byte[] { 0xFF, response.Values!=null ? response.TransactionId :(byte)0} );
 		}
 
         private void DebugMessage(byte[] bytes)

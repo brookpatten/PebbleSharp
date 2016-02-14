@@ -152,6 +152,12 @@ namespace PebbleSharp.Core
 		Install=0x05,
 	}
 
+	public enum PutBytesResult : byte
+	{
+		Ack=0x01,
+		Nack=0x02
+	}
+
 	public enum Hardware:byte
 	{
 		UNKNOWN = 0,

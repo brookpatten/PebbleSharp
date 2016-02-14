@@ -196,7 +196,7 @@ namespace PebbleCmd
 
 									//format a message
 									var rand = new Random().Next();
-									AppMessageDictionary message = new AppMessageDictionary();
+									AppMessagePacket message = new AppMessagePacket();
 									message.Values.Add(new AppMessageUInt32() { Value = (uint)rand });
 									message.Values.Add(new AppMessageString() { Value = "Hello from .net" });
 									message.ApplicationId = bundle.AppMetadata.UUID;

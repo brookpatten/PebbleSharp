@@ -4,12 +4,13 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using PebbleSharp.Core.Responses;
 
 namespace PebbleSharp.Core.NonPortable.AppMessage
 {
     //modeled after https://github.com/pebble/libpebble2/blob/master/libpebble2/services/appmessage.py
-
-    public class AppMessageDictionary
+	[Endpoint(Endpoint.ApplicationMessage)]
+	public class AppMessagePacket: ResponseBase
     {
         //TODO: the key names are in the manifest.... do we need them for anything?
 
@@ -49,102 +50,109 @@ namespace PebbleSharp.Core.NonPortable.AppMessage
         public byte TransactionId { get; set; }
         public UUID ApplicationId { get; set; }
 
-        public AppMessageDictionary()
+        public AppMessagePacket()
         {
             Values = new List<IAppMessageDictionaryEntry>();
         }
 
-        public AppMessageDictionary(byte[] bytes)
+
+
+        public AppMessagePacket(byte[] bytes)
         {
-            Values = new List<IAppMessageDictionaryEntry>();
-            int index = 0;
-            var command = bytes[index];
-            index++;
-
-            Command = command;
-            //if (command == Command)
-            {
-                TransactionId = bytes[index];
-                index++;
-
-                ApplicationId = new UUID(bytes.Skip(index).Take(16).ToArray());
-                index += 16;
-
-                int tupleCount = bytes[index];
-                index++;
-
-                for (int i = 0; i < tupleCount; i++)
-                {
-                    uint k;
-                    byte t;
-                    ushort l;
-
-                    k = BitConverter.ToUInt32(bytes, index);
-                    index += 4;
-
-                    t = bytes[index];
-                    index++;
-
-                    l = BitConverter.ToUInt16(bytes, index);
-                    index += 2;
-
-                    IAppMessageDictionaryEntry entry = null;
-                    if (t == (byte)PackedType.Bytes)
-                    {
-                        entry = new AppMessageBytes() { Value = bytes.Skip(index).Take(l).ToArray() };
-                    }
-                    else if (t == (byte)PackedType.Signed)
-                    {
-                        if (l == 1)
-                        {
-                            entry = new AppMessageInt8() { Value = Convert.ToSByte(bytes[index]) };
-                        }
-                        else if (l == 2)
-                        {
-                            entry = new AppMessageInt16() { Value = BitConverter.ToInt16(bytes, index) };
-                        }
-                        else if (l == 4)
-                        {
-                            entry = new AppMessageInt32() { Value = BitConverter.ToInt32(bytes, index) };
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("Invalid signed integer length");
-                        }
-                    }
-                    else if (t == (byte)PackedType.String)
-                    {
-                        entry = new AppMessageString() { Value = System.Text.Encoding.UTF8.GetString(bytes, index, l) };
-                    }
-                    else if (t == (byte)PackedType.Unsigned)
-                    {
-                        if (l == 1)
-                        {
-                            entry = new AppMessageUInt8() { Value = bytes[index] };
-                        }
-                        else if (l == 2)
-                        {
-                            entry = new AppMessageUInt16() { Value = BitConverter.ToUInt16(bytes, index) };
-                        }
-                        else if (l == 4)
-                        {
-                            entry = new AppMessageUInt32() { Value = BitConverter.ToUInt32(bytes, index) };
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("Invalid signed integer length");
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Unknown tuple type");
-                    }
-                    index += l;
-                    entry.Key = k;
-                    Values.Add(entry);
-                }
-            }
+			Load(bytes);
         }
+
+		protected override void Load(byte[] bytes)
+		{
+			Values = new List<IAppMessageDictionaryEntry>();
+			int index = 0;
+			var command = bytes[index];
+			index++;
+
+			Command = command;
+			//if (command == Command)
+			{
+				TransactionId = bytes[index];
+				index++;
+
+				ApplicationId = new UUID(bytes.Skip(index).Take(16).ToArray());
+				index += 16;
+
+				int tupleCount = bytes[index];
+				index++;
+
+				for (int i = 0; i < tupleCount; i++)
+				{
+					uint k;
+					byte t;
+					ushort l;
+
+					k = BitConverter.ToUInt32(bytes, index);
+					index += 4;
+
+					t = bytes[index];
+					index++;
+
+					l = BitConverter.ToUInt16(bytes, index);
+					index += 2;
+
+					IAppMessageDictionaryEntry entry = null;
+					if (t == (byte)PackedType.Bytes)
+					{
+						entry = new AppMessageBytes() { Value = bytes.Skip(index).Take(l).ToArray() };
+					}
+					else if (t == (byte)PackedType.Signed)
+					{
+						if (l == 1)
+						{
+							entry = new AppMessageInt8() { Value = Convert.ToSByte(bytes[index]) };
+						}
+						else if (l == 2)
+						{
+							entry = new AppMessageInt16() { Value = BitConverter.ToInt16(bytes, index) };
+						}
+						else if (l == 4)
+						{
+							entry = new AppMessageInt32() { Value = BitConverter.ToInt32(bytes, index) };
+						}
+						else
+						{
+							throw new InvalidOperationException("Invalid signed integer length");
+						}
+					}
+					else if (t == (byte)PackedType.String)
+					{
+						entry = new AppMessageString() { Value = System.Text.Encoding.UTF8.GetString(bytes, index, l) };
+					}
+					else if (t == (byte)PackedType.Unsigned)
+					{
+						if (l == 1)
+						{
+							entry = new AppMessageUInt8() { Value = bytes[index] };
+						}
+						else if (l == 2)
+						{
+							entry = new AppMessageUInt16() { Value = BitConverter.ToUInt16(bytes, index) };
+						}
+						else if (l == 4)
+						{
+							entry = new AppMessageUInt32() { Value = BitConverter.ToUInt32(bytes, index) };
+						}
+						else
+						{
+							throw new InvalidOperationException("Invalid signed integer length");
+						}
+					}
+					else
+					{
+						throw new InvalidOperationException("Unknown tuple type");
+					}
+					index += l;
+					entry.Key = k;
+					Values.Add(entry);
+				}
+			}
+		}
 
         public IList<IAppMessageDictionaryEntry> Values { get; set; }
 

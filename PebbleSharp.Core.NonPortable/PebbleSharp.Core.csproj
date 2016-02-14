@@ -45,7 +45,7 @@
     <Compile Include="AppInfo.cs" />
     <Compile Include="ApplicationManifest.cs" />
     <Compile Include="ApplicationMetadata.cs" />
-    <Compile Include="AppMessage\AppMessageDictionary.cs" />
+    <Compile Include="AppMessage\AppMessagePacket.cs" />
     <Compile Include="BundleManifest.cs" />
     <Compile Include="Bundles\AppBundle.cs" />
     <Compile Include="Bundles\BundleBase.cs" />
@@ -67,7 +67,6 @@
     <Compile Include="ResponseManager.cs" />
     <Compile Include="Responses\AppBankInstallResponse.cs" />
     <Compile Include="Responses\AppbankResponse.cs" />
-    <Compile Include="Responses\ApplicationMessageResponse.cs" />
     <Compile Include="Responses\DataLogResponse.cs" />
     <Compile Include="Responses\EndpointAttribute.cs" />
     <Compile Include="Responses\FirmwareVersionResponse.cs" />
@@ -75,7 +74,6 @@
     <Compile Include="Responses\MusicControlResponse.cs" />
     <Compile Include="Responses\PhoneVersionResponse.cs" />
     <Compile Include="Responses\PingResponse.cs" />
-    <Compile Include="Responses\PutBytesResponse.cs" />
     <Compile Include="Responses\ResponseBase.cs" />
     <Compile Include="Responses\SystemMessageResponse.cs" />
     <Compile Include="Responses\TimeResponse.cs" />
@@ -85,9 +83,9 @@
     <Compile Include="Util.cs" />
     <Compile Include="UUID.cs" />
     <Compile Include="BlobDB\BlobDBClient.cs" />
-    <Compile Include="BlobDB\BlobDBResponse.cs" />
+    <Compile Include="BlobDB\BlobDBResponsePacket.cs" />
     <Compile Include="BlobDB\AppMetaData.cs" />
-    <Compile Include="BlobDB\BlobDBCommand.cs" />
+    <Compile Include="BlobDB\BlobDBCommandPacket.cs" />
     <Compile Include="BlobDB\TimelineItem.cs" />
     <Compile Include="BlobDB\TimelineAttribute.cs" />
     <Compile Include="BlobDB\TimelineAction.cs" />
@@ -97,6 +95,7 @@
     <Compile Include="Apps\AppFetchResponsePacket.cs" />
     <Compile Include="PutBytes\PutBytesClient.cs" />
     <Compile Include="Install\InstallClient.cs" />
+    <Compile Include="PutBytes\PutBytesResponsePacket.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BlobDB\" />

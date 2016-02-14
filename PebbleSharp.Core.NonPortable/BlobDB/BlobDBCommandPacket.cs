@@ -6,7 +6,7 @@ using PebbleSharp.Core.Responses;
 namespace PebbleSharp.Core.BlobDB
 {
 	[Endpoint(Endpoint.BlobDB)]
-	public class BlobDBCommand
+	public class BlobDBCommandPacket
 	{
 		public BlobCommand Command {get;set;}
 		public ushort Token { get; set; }

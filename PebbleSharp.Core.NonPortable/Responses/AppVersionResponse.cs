@@ -45,7 +45,7 @@ namespace PebbleSharp.Core
 			PlatformFlags = 50;
 			ResponseVersion = 2;
 			MajorVersion = 3;
-			MinorVersion = 0;
+			MinorVersion = 6;
 			BugfixVersion = 0;
 			ProtocolCaps = 0xFFFFFFFFFFFFFFFF;
 		}
