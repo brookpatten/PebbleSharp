@@ -421,5 +421,10 @@ namespace PebbleSharp.Core
             }
         }
 
+		public void Reset(ResetCommand command)
+		{
+			_PebbleProt.SendMessage((ushort)Endpoint.Reset, new byte[] { (byte)command });
+		}
+
     }
 }

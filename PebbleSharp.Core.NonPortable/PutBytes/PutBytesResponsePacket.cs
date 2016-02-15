@@ -12,7 +12,7 @@ namespace PebbleSharp.Core.Responses
 			Result = (PutBytesResult)payload[0];
 			if (Result == PutBytesResult.Ack)
 			{
-				Token = BitConverter.ToUInt32(payload, 1);
+				Token = Util.GetUInt32(payload, 1);
 			}
 			else
 			{

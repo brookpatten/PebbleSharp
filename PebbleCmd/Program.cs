@@ -112,7 +112,7 @@ namespace PebbleCmd
                 "Media Commands",
                 "Install App",
                 "Send App Message",
-				"Test BlobDB",
+				"Reset",
 				"Send Notification");
             while ( true )
             {
@@ -220,7 +220,7 @@ namespace PebbleCmd
                         }
 						break;
 					case 8:
-						TestBlobDB(pebble);
+						pebble.Reset(ResetCommand.Reset);
 						break;
 					case 9:
 						TestNotification(pebble);

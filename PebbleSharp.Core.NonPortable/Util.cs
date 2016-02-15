@@ -83,6 +83,12 @@ namespace PebbleSharp.Core
             return @string;
         }
 
+		public static int GetInt32( byte[] bytes, int index = 0 )
+		{
+			byte[] copiedBytes = GetOrderedBytes( bytes, index, sizeof( uint ) );
+			return BitConverter.ToInt32( copiedBytes, 0 );
+		}
+
         public static uint GetUInt32( byte[] bytes, int index = 0 )
         {
             byte[] copiedBytes = GetOrderedBytes( bytes, index, sizeof( uint ) );

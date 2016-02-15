@@ -31,7 +31,7 @@ namespace PebbleSharp.Core
 				System.Console.WriteLine("Installing AppId: " + appInstallId);
 				byte hackedTransferType = (byte)transferType;
 				hackedTransferType |= (1 << 7); //just put that bit anywhere...
-				header = Util.CombineArrays(new byte[] { ((byte)PutBytesType.Init) }, length, new[] { hackedTransferType},BitConverter.GetBytes(appInstallId));
+				header = Util.CombineArrays(new byte[] { ((byte)PutBytesType.Init) }, length, new[] { hackedTransferType},Util.GetBytes(appInstallId));
 			}
 			else 
 			{
@@ -56,7 +56,7 @@ namespace PebbleSharp.Core
 			for ( int i = 0; i <= binary.Length / BUFFER_SIZE; i++ )
 			{
 				byte[] data = binary.Skip( BUFFER_SIZE * i ).Take( BUFFER_SIZE ).ToArray();
-				byte[] dataHeader = Util.CombineArrays( new byte[] { (byte)PutBytesType.Put }, BitConverter.GetBytes(token), Util.GetBytes( data.Length ) );
+				byte[] dataHeader = Util.CombineArrays( new byte[] { (byte)PutBytesType.Put }, Util.GetBytes(token), Util.GetBytes( data.Length ) );
 				var result = await _pebble.SendMessageAsync<PutBytesResponsePacket>( Endpoint.PutBytes, Util.CombineArrays( dataHeader, data ) );
 				if ( result.Result == PutBytesResult.Nack )
 				{
@@ -73,7 +73,7 @@ namespace PebbleSharp.Core
 			uint crc = Crc32.Calculate( binary );
 			byte[] crcBytes = Util.GetBytes( crc );
 			System.Console.WriteLine("CRC:" + crc);
-			byte[] commitMessage = Util.CombineArrays( new byte[] { (byte)PutBytesType.Commit }, BitConverter.GetBytes(token), crcBytes );
+			byte[] commitMessage = Util.CombineArrays( new byte[] { (byte)PutBytesType.Commit }, Util.GetBytes(token), crcBytes );
 			var commitResult = await _pebble.SendMessageAsync<PutBytesResponsePacket>( Endpoint.PutBytes, commitMessage );
 			if ( commitResult.Result == PutBytesResult.Nack )
 			{
@@ -87,7 +87,7 @@ namespace PebbleSharp.Core
 
 
 			//Send install message
-			byte[] completeMessage = Util.CombineArrays( new byte[] { (byte)PutBytesType.Install }, BitConverter.GetBytes(token) );
+			byte[] completeMessage = Util.CombineArrays( new byte[] { (byte)PutBytesType.Install }, Util.GetBytes(token) );
 			var completeResult = await _pebble.SendMessageAsync<PutBytesResponsePacket>( Endpoint.PutBytes, completeMessage );
 			if (completeResult.Result == PutBytesResult.Nack)
 			{
@@ -103,7 +103,7 @@ namespace PebbleSharp.Core
 
 		private async Task<PutBytesResponsePacket> AbortPutBytesAsync( uint token )
 		{
-			byte[] data = Util.CombineArrays( new byte[] { (byte)PutBytesType.Abort }, BitConverter.GetBytes(token) );
+			byte[] data = Util.CombineArrays( new byte[] { (byte)PutBytesType.Abort }, Util.GetBytes(token) );
 
 			return await _pebble.SendMessageAsync<PutBytesResponsePacket>( Endpoint.PutBytes, data );
 		}

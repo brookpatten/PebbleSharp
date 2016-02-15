@@ -17,11 +17,14 @@ namespace PebbleSharp.Core.Install
 		}
 		public async Task InstallAppAsync( AppBundle bundle, IProgress<ProgressValue> progress = null )
 		{
+			
 			var firmware = await _pebble.GetFirmwareVersionAsync ();
 			string version = firmware.Firmware.Version;
 			version = version.Replace("v", "");
-			var components = version.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-			IList<int> versionComponents = components.Select(x => int.Parse(x)).ToList();
+			var components = version.Split(new char[] { '.','-' }, StringSplitOptions.RemoveEmptyEntries);
+
+			int i;
+			IList<int> versionComponents = components.Where(x=>int.TryParse(x,out i)).Select(x => int.Parse(x)).ToList();
 			if (versionComponents[0] < 3) 
 			{
 				await InstallAppLegacyV2 (bundle, progress);
@@ -40,14 +43,16 @@ namespace PebbleSharp.Core.Install
 			var meta = AppMetaData.FromAppBundle(bundle);
 
 			var bytes = meta.GetBytes();
-			await _pebble.BlobDBClient.Delete(BlobDatabase.App, meta.UUID.Data);
-			var result = await _pebble.BlobDBClient.Insert(BlobDatabase.App, meta.UUID.Data, bytes);
+			var result = await _pebble.BlobDBClient.Delete(BlobDatabase.App, meta.UUID.Data);
+
+			result = await _pebble.BlobDBClient.Insert(BlobDatabase.App, meta.UUID.Data, bytes);
 
 			if (result.Response == BlobStatus.Success)
 			{
 				var startPacket = new AppRunStatePacket();
 				startPacket.Command = AppRunState.Start;
 				startPacket.UUID = meta.UUID;
+				//app_fetch = self._pebble.send_and_read(AppRunState(data=AppRunStateStart(uuid=app_uuid)), AppFetchRequest)
 
 				var runStateResult = await _pebble.SendMessageAsync<AppFetchRequestPacket>(Endpoint.AppRunState, startPacket.GetBytes());
 
@@ -57,7 +62,7 @@ namespace PebbleSharp.Core.Install
 				}
 				else
 				{
-					Console.WriteLine("Pebble requested app id " + runStateResult.AppId);
+					Console.WriteLine("Pebble requested "+runStateResult.Command.ToString()+" app id " + runStateResult.AppId);
 				}
 
 				if (!meta.UUID.Equals(runStateResult.UUID))
@@ -92,6 +97,7 @@ namespace PebbleSharp.Core.Install
 					}
 				}
 
+				System.Console.WriteLine(runStateResult.Command);
 				//TODO: add worker to manifest and transfer it if necassary
 				//if (bundle.HasWorker)
 				//{

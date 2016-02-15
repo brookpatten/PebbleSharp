@@ -59,8 +59,8 @@ namespace PebbleSharp.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the payload is too large.</exception>
         public void SendMessage( ushort endpoint, byte[] payload )
         {
-			Console.WriteLine("SEND:" + ((Endpoint)endpoint).ToString()+"["+payload.Length+"]");
-            if ( payload.Length > 2048 )
+			System.Console.WriteLine("SEND:" + ((Endpoint)endpoint));
+			if ( payload.Length > 2048 )
             {
                 throw new ArgumentOutOfRangeException( "payload",
                                                       "The payload cannot not be more than 2048 bytes" );
@@ -70,8 +70,17 @@ namespace PebbleSharp.Core
             byte[] payloadSize = Util.GetBytes( length );
             byte[] endPoint = Util.GetBytes( endpoint );
 
-            _blueToothConnection.Write( Util.CombineArrays( payloadSize, endPoint, payload ) );
+			var packet = Util.CombineArrays(payloadSize, endPoint, payload);
+			LogPacket("SEND",packet);
+            _blueToothConnection.Write(packet);
         }
+
+		public void LogPacket(string action,byte[] packet)
+		{
+			string hex = BitConverter.ToString(packet);
+			hex = hex.Replace("-","").ToLower();
+			Console.WriteLine(action+":" + hex);
+		}
 
         private void SerialPortDataReceived( object sender, BytesReceivedEventArgs e )
         {
@@ -118,7 +127,12 @@ namespace PebbleSharp.Core
                     {
                         // All of the payload's been received, so read it.
                         var buffer = ReadBytes( _CurrentPayloadSize );
-						Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint).ToString()+"["+buffer.Length+"]");
+
+						byte[] fullPacket = Util.CombineArrays(Util.GetBytes(_CurrentPayloadSize),Util.GetBytes(_CurrentEndpoint),buffer);
+						System.Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint));
+						LogPacket("RECV", fullPacket);
+
+						//Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint).ToString()+"["+buffer.Length+"]");
                         RawMessageReceived( this, new RawMessageReceivedEventArgs( _CurrentEndpoint, buffer ) );
                         // Reset state
                         _WaitingState = WaitingStates.NewMessage;

@@ -158,6 +158,14 @@ namespace PebbleSharp.Core
 		Nack=0x02
 	}
 
+	public enum ResetCommand
+	{
+		Reset = 0x00,
+		DumpCore = 0x01,
+		FactoryReset = 0x02,
+		PRF = 0x03
+	}
+
 	public enum Hardware:byte
 	{
 		UNKNOWN = 0,
