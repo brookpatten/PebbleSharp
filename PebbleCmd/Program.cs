@@ -156,7 +156,7 @@ namespace PebbleCmd
                                     zip.Open(stream);
                                     var bundle = new AppBundle();
                                     stream.Position = 0;
-									bundle.Load(stream, zip,pebble.Firmware.HardwarePlatform.GetPlatform());
+									bundle.Load(zip,pebble.Firmware.HardwarePlatform.GetPlatform());
                                     var task = pebble.InstallClient.InstallAppAsync(bundle, progress);
                                     await task;
 									if (task.IsFaulted)
@@ -164,6 +164,7 @@ namespace PebbleCmd
 										Console.WriteLine("Failed to install");
 									}
 
+									//for firmware v3, launch is done as part of the install
                                     //Console.WriteLine("App Installed, launching...");
 									//var uuid=new UUID(bundle.AppInfo.UUID);
 									//pebble.LaunchApp(uuid);
@@ -190,7 +191,7 @@ namespace PebbleCmd
 									zip.Open(stream);
 									var bundle = new AppBundle();
 									stream.Position = 0;
-									bundle.Load(stream, zip,pebble.Firmware.HardwarePlatform.GetPlatform());
+									bundle.Load(zip,pebble.Firmware.HardwarePlatform.GetPlatform());
 
 
 									//format a message

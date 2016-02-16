@@ -34,14 +34,10 @@ namespace PebbleSharp.Core.Bundles
         /// </summary>
         /// <param name="bundle">The stream to the bundle.</param>
         /// <param name="zip">The zip library implementation.</param>
-		public void Load(Stream bundle, IZip zip, Platform platform)
+		public void Load(IZip zip, Platform platform)
         {
 			Platform = platform;
-            //TODO: This needs to be refactored, probably put into a Load method
-            if (false == zip.Open(bundle))
-                throw new InvalidOperationException("Failed to open pebble bundle");
-
-			Manifest = LoadManifest (zip);
+            Manifest = LoadManifest (zip);
 
             HasResources = (Manifest.Resources.Size != 0);
 
