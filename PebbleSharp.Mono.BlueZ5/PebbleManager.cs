@@ -67,7 +67,7 @@ namespace PebbleSharp.Mono.BlueZ5
 				, PebbleSerialUUID
 				, properties);
 			Profile.NewConnectionAction=(path,fd,props)=>{
-				System.Console.WriteLine("Connecting to " + path);
+				//System.Console.WriteLine("Connected to " + path);
 				Pebbles[path].FileDescriptor = fd;
 				Pebbles[path].FileDescriptor.SetBlocking();
 				var stream = Pebbles[path].FileDescriptor.OpenAsStream(true);
@@ -117,7 +117,7 @@ namespace PebbleSharp.Mono.BlueZ5
 
 			if(doDiscovery)
 			{
-				System.Console.WriteLine("Starting Discovoery...");
+				System.Console.WriteLine("Starting Discovery...");
 				//scan for any new devices
 				Adapter.StartDiscovery ();
 				Thread.Sleep(5000);//totally arbitrary constant, the best kind
@@ -145,7 +145,7 @@ namespace PebbleSharp.Mono.BlueZ5
 
 								try
 								{
-									System.Console.WriteLine("Attempting connection to " + obj);
+									//System.Console.WriteLine("Attempting connection to " + obj);
 									if (!device.Paired)
 									{
 										device.Pair ();

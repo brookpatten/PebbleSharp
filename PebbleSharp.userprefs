@@ -1,9 +1,9 @@
 ﻿<Properties StartupItem="PebbleCmd/PebbleCmd.csproj">
   <MonoDevelop.Ide.ItemProperties.PebbleCmd PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleSharp.Core.NonPortable/Install/InstallClient.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleSharp.Core.NonPortable/Util.cs">
     <Files>
       <File FileName="PebbleSharp.Core.NonPortable/PutBytes/PutBytesClient.cs" Line="16" Column="27" />
-      <File FileName="PebbleSharp.Core.NonPortable/Install/InstallClient.cs" Line="72" Column="32" />
+      <File FileName="PebbleSharp.Core.NonPortable/Install/InstallClient.cs" Line="47" Column="4" />
       <File FileName="PebbleSharp.Core.NonPortable/BlobDB/BlobDBClient.cs" Line="49" Column="36" />
       <File FileName="PebbleSharp.Core.NonPortable/BlobDB/BlobDBResponsePacket.cs" Line="12" Column="20" />
       <File FileName="PebbleCmd/Program.cs" Line="59" Column="18" />
@@ -11,6 +11,13 @@
       <File FileName="PebbleSharp.Core.NonPortable/Pebble.cs" Line="420" Column="24" />
       <File FileName="PebbleSharp.Core.NonPortable/Enums.cs" Line="167" Column="3" />
       <File FileName="PebbleCmd/Menu.cs" Line="1" Column="1" />
+      <File FileName="PebbleSharp.Core.NonPortable/BlobDB/TimelineAction.cs" Line="1" Column="1" />
+      <File FileName="PebbleSharp.Core.NonPortable/BlobDB/TimelineAttribute.cs" Line="24" Column="4" />
+      <File FileName="PebbleSharp.Core.NonPortable/BlobDB/TimelineItem.cs" Line="88" Column="31" />
+      <File FileName="PebbleSharp.Core.NonPortable/BlobDB/BlobDBCommandPacket.cs" Line="1" Column="1" />
+      <File FileName="PebbleSharp.Core.NonPortable/Apps/AppFetchResponsePacket.cs" Line="1" Column="1" />
+      <File FileName="PebbleSharp.Core.NonPortable/Apps/AppFetchRequestPacket.cs" Line="27" Column="20" />
+      <File FileName="PebbleSharp.Core.NonPortable/Util.cs" Line="135" Column="37" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

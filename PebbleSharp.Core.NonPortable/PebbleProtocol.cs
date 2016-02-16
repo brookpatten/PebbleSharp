@@ -59,7 +59,7 @@ namespace PebbleSharp.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the payload is too large.</exception>
         public void SendMessage( ushort endpoint, byte[] payload )
         {
-			System.Console.WriteLine("SEND:" + ((Endpoint)endpoint));
+			//System.Console.WriteLine("SEND:" + ((Endpoint)endpoint));
 			if ( payload.Length > 2048 )
             {
                 throw new ArgumentOutOfRangeException( "payload",
@@ -71,7 +71,7 @@ namespace PebbleSharp.Core
             byte[] endPoint = Util.GetBytes( endpoint );
 
 			var packet = Util.CombineArrays(payloadSize, endPoint, payload);
-			LogPacket("SEND",packet);
+			//LogPacket("SEND",packet);
             _blueToothConnection.Write(packet);
         }
 
@@ -129,8 +129,8 @@ namespace PebbleSharp.Core
                         var buffer = ReadBytes( _CurrentPayloadSize );
 
 						byte[] fullPacket = Util.CombineArrays(Util.GetBytes(_CurrentPayloadSize),Util.GetBytes(_CurrentEndpoint),buffer);
-						System.Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint));
-						LogPacket("RECV", fullPacket);
+						//System.Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint));
+						//LogPacket("RECV", fullPacket);
 
 						//Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint).ToString()+"["+buffer.Length+"]");
                         RawMessageReceived( this, new RawMessageReceivedEventArgs( _CurrentEndpoint, buffer ) );

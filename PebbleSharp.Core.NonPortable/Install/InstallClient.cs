@@ -17,9 +17,8 @@ namespace PebbleSharp.Core.Install
 		}
 		public async Task InstallAppAsync( AppBundle bundle, IProgress<ProgressValue> progress = null )
 		{
-			
-			var firmware = await _pebble.GetFirmwareVersionAsync ();
-			string version = firmware.Firmware.Version;
+
+			string version = _pebble.Firmware.Version;
 			version = version.Replace("v", "");
 			var components = version.Split(new char[] { '.','-' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -60,10 +59,6 @@ namespace PebbleSharp.Core.Install
 				{
 					throw new InvalidOperationException("Pebble replied invalid run state");
 				}
-				else
-				{
-					Console.WriteLine("Pebble requested "+runStateResult.Command.ToString()+" app id " + runStateResult.AppId);
-				}
 
 				if (!meta.UUID.Equals(runStateResult.UUID))
 				{
@@ -78,11 +73,6 @@ namespace PebbleSharp.Core.Install
 				{
 					throw new InvalidOperationException("Putbytes failed");
 				}
-				else
-				{
-					System.Console.WriteLine("Binary:OK");
-				}
-
 
 				if (bundle.HasResources)
 				{
@@ -91,13 +81,8 @@ namespace PebbleSharp.Core.Install
 					{
 						throw new InvalidOperationException("Putbytes failed");
 					}
-					else
-					{
-						System.Console.WriteLine("Resources:OK");
-					}
 				}
 
-				System.Console.WriteLine(runStateResult.Command);
 				//TODO: add worker to manifest and transfer it if necassary
 				//if (bundle.HasWorker)
 				//{

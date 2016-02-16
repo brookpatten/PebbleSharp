@@ -17,7 +17,6 @@ namespace PebbleSharp.Core.Bundles
 		protected string PlatformSubdirectory()
 		{
 			var platformSubdirectory = (Platform == Platform.UNKNOWN ? "" : Platform.ToString().ToLower()+"/");
-			System.Console.WriteLine("Platform Subdir:" + platformSubdirectory);
 			return platformSubdirectory;
 		}
 

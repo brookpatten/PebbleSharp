@@ -20,7 +20,7 @@ namespace PebbleSharp.Core
     /// </summary>
     public abstract class Pebble
     {
-		public Hardware Hardware { get; private set;}
+		public FirmwareVersion Firmware { get; private set;}
 		private readonly PebbleProtocol _PebbleProt;
 
         private readonly Dictionary<Type, List<CallbackContainer>> _callbackHandlers;
@@ -91,18 +91,18 @@ namespace PebbleSharp.Core
 				var message = new AppVersionResponse();
 				await SendMessageNoResponseAsync( Endpoint.PhoneVersion, message.GetBytes() );
                 IsAlive = true;
+
+				//get the firmware details, we'll need to know the platform and version for possible future actions
+				var firmwareResponse = await this.GetFirmwareVersionAsync();
+				this.Firmware = firmwareResponse.Firmware;
             }
             else
             {
                 Disconnect();
             }
+		}
 
-			//go ahead and get the firmware info
-			//TODO: store all this somewhere, we'll probably want the version etc too
-			var firmware = await this.GetFirmwareVersionAsync();
-			this.Hardware = (Hardware)firmware.Firmware.HardwarePlatform;
-			System.Console.WriteLine("Connected platform " + this.Hardware.GetPlatform());
-        }
+
 
         /// <summary>
         ///     Disconnect from the Pebble, if a connection existed.

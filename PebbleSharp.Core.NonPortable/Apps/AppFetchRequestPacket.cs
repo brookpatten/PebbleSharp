@@ -19,12 +19,20 @@ namespace PebbleSharp.Core
 			Command = payload[0];
 			UUID = new UUID(payload.Skip(1).Take(16).ToArray());
 
-			//TODO: figure out why this is fubar, something something endianness
-			//packet capture from libpebble 2 shows the endians being flipped.... somewhere.
-			//possibly a python thing?  I have no idea.
-			var bytes = new byte[]{ payload[20], payload[19], payload[18], payload[17] };
 
-			AppId = Util.GetInt32(bytes,0);
+			//this packet is defined as little endian, which is slightly abnormal since 
+			//it is coming from the pebble
+			//(most packets from he pebble are big endian / network endian)
+			//TODO: refactor Util conversions to respect per packet endian attributes
+			if (BitConverter.IsLittleEndian)
+			{
+				AppId = BitConverter.ToInt32(payload, 17);
+			}
+			else
+			{
+				//this will actually flip it because it thinks it is big endian.
+				AppId = Util.GetInt32(payload, 17);
+			}
 		}
 	}
 }

@@ -47,10 +47,9 @@ namespace PebbleCmd
                     if (result >= 0 && result < pebbles.Count)
                     {
                         var selectedPebble = pebbles[result];
-                        Console.WriteLine("Connecting to Pebble " + selectedPebble.PebbleID);
+                        Console.WriteLine("Connecting to " + selectedPebble.PebbleID);
 						selectedPebble.ConnectAsync().Wait();
-                        Console.WriteLine("Connected");
-						ShowPebbleMenu(selectedPebble).Wait();
+                        ShowPebbleMenu(selectedPebble).Wait();
                     }
                 }
                 else
@@ -157,7 +156,7 @@ namespace PebbleCmd
                                     zip.Open(stream);
                                     var bundle = new AppBundle();
                                     stream.Position = 0;
-									bundle.Load(stream, zip,pebble.Hardware.GetPlatform());
+									bundle.Load(stream, zip,pebble.Firmware.HardwarePlatform.GetPlatform());
                                     var task = pebble.InstallClient.InstallAppAsync(bundle, progress);
                                     await task;
 									if (task.IsFaulted)
@@ -191,7 +190,7 @@ namespace PebbleCmd
 									zip.Open(stream);
 									var bundle = new AppBundle();
 									stream.Position = 0;
-									bundle.Load(stream, zip,pebble.Hardware.GetPlatform());
+									bundle.Load(stream, zip,pebble.Firmware.HardwarePlatform.GetPlatform());
 
 
 									//format a message

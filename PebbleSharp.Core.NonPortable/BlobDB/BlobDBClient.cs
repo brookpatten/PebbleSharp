@@ -48,7 +48,6 @@ namespace PebbleSharp.Core.BlobDB
 		}
 		private async Task<BlobDBResponsePacket> Send(BlobDBCommandPacket command)
 		{
-			Console.WriteLine("Sending Token " + command.Token);
 			return await _pebble.SendBlobDBMessage(command);
 		}
 		public ushort GenerateToken()
