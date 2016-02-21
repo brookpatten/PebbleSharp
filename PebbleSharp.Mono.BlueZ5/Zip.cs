@@ -8,7 +8,7 @@ namespace PebbleSharp.Mono.BlueZ5
 {
     public sealed class Zip : IZip
     {
-        private ZipFile _zipFile;
+		private ZipFile _zipFile;
         private Stream _zipStream;
 
         ~Zip()
@@ -42,6 +42,9 @@ namespace PebbleSharp.Mono.BlueZ5
 
         public bool Open( Stream zipStream )
         {
+			//this ensures that we load the code page, otherwise on mono it might not be available
+			//and will cause an error when the zip lib attempts to open it
+			var cp = new I18N.West.CP437();
             _zipStream = zipStream;
             _zipFile = ZipFile.Read( zipStream );
             return true;

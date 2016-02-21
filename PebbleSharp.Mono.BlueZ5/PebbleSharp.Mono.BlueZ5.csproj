@@ -40,6 +40,9 @@
     <Reference Include="I18N.West">
       <HintPath>..\..\..\..\..\..\..\..\opt\mono-2016.02.18+20.15.33\lib\mono\gac\I18N.West\4.0.0.0__0738eb9f132ed756\I18N.West.dll</HintPath>
     </Reference>
+    <Reference Include="I18N">
+      <HintPath>..\..\..\..\..\..\..\..\opt\mono-2016.02.18+20.15.33\lib\mono\gac\I18N\4.0.0.0__0738eb9f132ed756\I18N.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
