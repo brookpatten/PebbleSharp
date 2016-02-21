@@ -128,7 +128,7 @@ namespace PebbleSharp.Core
                         // All of the payload's been received, so read it.
                         var buffer = ReadBytes( _CurrentPayloadSize );
 
-						byte[] fullPacket = Util.CombineArrays(Util.GetBytes(_CurrentPayloadSize),Util.GetBytes(_CurrentEndpoint),buffer);
+						//byte[] fullPacket = Util.CombineArrays(Util.GetBytes(_CurrentPayloadSize),Util.GetBytes(_CurrentEndpoint),buffer);
 						//System.Console.WriteLine("RECV:" + ((Endpoint)_CurrentEndpoint));
 						//LogPacket("RECV", fullPacket);
 

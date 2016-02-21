@@ -31,7 +31,7 @@ namespace PebbleSharp.Core
         public static byte[] GetBytes( Stream stream )
         {
             if ( stream == null ) throw new ArgumentNullException( "stream" );
-            int size = (int)( stream.Length - stream.Position );
+			int size = (int)( stream.Length - stream.Position );
             var rv = new byte[size];
             stream.Read( rv, 0, size );
             return rv;
