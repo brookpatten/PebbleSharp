@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PebbleCmd", "PebbleCmd\PebbleCmd.csproj", "{242D37E6-027D-4F98-AC74-D95A9B03E85D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PebbleSharp.Core", "PebbleSharp.Core.NonPortable\PebbleSharp.Core.csproj", "{E52DCFA6-ED09-4B88-AE50-97072323942C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PebbleSharp.Core", "PebbleSharp.Core\PebbleSharp.Core.csproj", "{E52DCFA6-ED09-4B88-AE50-97072323942C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.BlueZ.DBus", "Mono.BlueZ\Mono.BlueZ.DBus\Mono.BlueZ.DBus.csproj", "{68E6EB3B-4076-48F6-9EB6-1181057C0977}"
 EndProject
