@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using PebbleSharp.Core;
-using PebbleSharp.Core.Responses;
+using PebbleSharp;
+
 using PebbleSharp.Mono.BlueZ5;
 using PebbleSharp.Core.Bundles;
 using PebbleSharp.Core.BlobDB;
+using PebbleSharp.Core.Responses;
 using PebbleSharp.Core.NonPortable.AppMessage;
 
 namespace PebbleCmd
@@ -31,7 +32,7 @@ namespace PebbleCmd
 				var manager = new PebbleManager();
                 Console.WriteLine("PebbleCmd");
                 Console.WriteLine("Discovering and Pairing Pebbles");
-				var pebbles = manager.Detect("hci0",false);
+				var pebbles = manager.Detect("hci1",true);
 				Console.WriteLine("Select Pebble to connect to:");
                 if (pebbles != null && pebbles.Any())
                 {

@@ -2,26 +2,12 @@
   <MonoDevelop.Ide.ItemProperties.PebbleCmd PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="PebbleCmd/Program.cs">
     <Files>
-      <File FileName="PebbleCmd/Program.cs" Line="194" Column="22" />
-      <File FileName="PebbleSharp.Core.NonPortable/Pebble.cs" Line="376" Column="10" />
+      <File FileName="PebbleCmd/Program.cs" Line="38" Column="18" />
       <File FileName="PebbleSharp.Mono.BlueZ5/PebbleManager.cs" Line="75" Column="35" />
-      <File FileName="PebbleSharp.Mono.BlueZ5/BlueZ5Pebble.cs" Line="18" Column="12" />
-      <File FileName="PebbleSharp.Core.NonPortable/Bundles/BundleBase.cs" Line="37" Column="15" />
-      <File FileName="PebbleSharp.Mono.BlueZ5/Zip.cs" Line="43" Column="24" />
+      <File FileName="PebbleSharp.Mono.BlueZ5/BlueZ5Pebble.cs" Line="13" Column="1" />
+      <File FileName="PebbleSharp.Mono.BlueZ5/Zip.cs" Line="43" Column="1" />
+      <File FileName="PebbleSharp.Core/Responses/ResponseBase.cs" Line="1" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="PebbleSharp" expanded="True">
-            <Node name="PebbleCmd" expanded="True" selected="True" />
-            <Node name="PebbleSharp.Core" expanded="True">
-              <Node name="Bundles" expanded="True" />
-            </Node>
-            <Node name="PebbleSharp.Mono.BlueZ5" expanded="True" />
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

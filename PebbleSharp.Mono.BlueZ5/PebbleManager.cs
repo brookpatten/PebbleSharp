@@ -112,7 +112,7 @@ namespace PebbleSharp.Mono.BlueZ5
 			}
 
 			//get a dbus proxy to the adapter
-			_adapter = _connection.System.GetObject<Adapter1> (BlueZPath.Service, BlueZPath.Root);
+			_adapter = _connection.System.GetObject<Adapter1> (BlueZPath.Service, BlueZPath.Adapter(adapterName));
 
 			if(doDiscovery)
 			{
