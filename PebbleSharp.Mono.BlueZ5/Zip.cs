@@ -121,7 +121,7 @@ namespace PebbleSharp.Mono.BlueZ5
 			set { _entryStream.ReadTimeout = value; }
 		}
 
-		public virtual int WriteTimeout {
+		public override int WriteTimeout {
 			get {return _entryStream.WriteTimeout;}
 			set { _entryStream.WriteTimeout = value; }
 		}
