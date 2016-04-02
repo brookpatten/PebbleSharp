@@ -1,6 +1,8 @@
 PebbleSharp
 ===========
 
+[![Build Status](https://travis-ci.org/brookpatten/PebbleSharp.Mono.BlueZ.svg?branch=master)](https://travis-ci.org/brookpatten/PebbleSharp.Mono.BlueZ)
+
 This fork of PebbleSharp is intended specifically for use on mono with the bluez 5 bluetooth stack.
 It is also meant for use on a raspberry pi (ARMHF), but that is *probably* not important, I believe it would work fine on any linux/bluez/mono installation.  (It definitely works on ubuntu)
 
