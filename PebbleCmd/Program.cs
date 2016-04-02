@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PebbleSharp;
 
+using PebbleSharp.Core;
 using PebbleSharp.Mono.BlueZ5;
 using PebbleSharp.Core.Bundles;
 using PebbleSharp.Core.BlobDB;

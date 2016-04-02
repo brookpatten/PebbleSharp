@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PebbleCmd</RootNamespace>
     <AssemblyName>PebbleCmd</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -54,7 +54,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PebbleSharp.Core.NonPortable\PebbleSharp.Core.csproj">
+    <ProjectReference Include="..\PebbleSharp.Core\PebbleSharp.Core.csproj">
       <Project>{E52DCFA6-ED09-4B88-AE50-97072323942C}</Project>
       <Name>PebbleSharp.Core</Name>
     </ProjectReference>
