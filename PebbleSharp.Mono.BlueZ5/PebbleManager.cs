@@ -185,14 +185,15 @@ namespace PebbleSharp.Mono.BlueZ5
 
 		public void Dispose()
 		{
-			if (_agentManager != null && AgentPath != null)
-			{
-				_agentManager.UnregisterAgent (AgentPath);
-			}
-			if (_profileManager != null && ProfilePath != null)
-			{
-				_profileManager.UnregisterProfile (ProfilePath);
-			}
+			//don't think we need these, bluez will cleanup all our objects once we disconnect
+			//if (_agentManager != null && AgentPath != null)
+			//{
+			//	_agentManager.UnregisterAgent (AgentPath);
+			//}
+			//if (_profileManager != null && ProfilePath != null)
+			//{
+			//	_profileManager.UnregisterProfile (ProfilePath);
+			//}
 			if (_ownsConnection && _connection != null)
 			{
 				_connection.Dispose ();

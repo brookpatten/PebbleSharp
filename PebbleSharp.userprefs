@@ -1,6 +1,6 @@
 ﻿<Properties StartupItem="PebbleCmd/PebbleCmd.csproj">
   <MonoDevelop.Ide.ItemProperties.PebbleCmd PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleCmd/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PebbleSharp.Mono.BlueZ5/PebbleAgent.cs">
     <Files>
       <File FileName="PebbleCmd/Program.cs" Line="9" Column="24" />
       <File FileName="PebbleSharp.Mono.BlueZ5/PebbleManager.cs" Line="75" Column="35" />
@@ -11,13 +11,12 @@
       <File FileName="PebbleSharp.Core/Bundles/BundleBase.cs" Line="1" Column="1" />
       <File FileName="PebbleSharp.Core/Bundles/FirmwareBundle.cs" Line="1" Column="1" />
       <File FileName="PebbleSharp.Core/Pebble.cs" Line="14" Column="11" />
+      <File FileName="PebbleSharp.Mono.BlueZ5/PebbleAgent.cs" Line="1" Column="7" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="PebbleSharp" expanded="True" selected="True">
-            <Node name="PebbleCmd" expanded="True" />
-          </Node>
+          <Node name="PebbleSharp" expanded="True" selected="True" />
         </State>
       </Pad>
     </Pads>
