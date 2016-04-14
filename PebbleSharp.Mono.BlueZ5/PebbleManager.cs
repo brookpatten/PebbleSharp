@@ -78,12 +78,12 @@ namespace PebbleSharp.Mono.BlueZ5
 			//get a copy of the object manager so we can browse the "tree" of bluetooth items
 			_objectManager = _connection.System.GetObject<org.freedesktop.DBus.ObjectManager> (BlueZPath.Service, ObjectPath.Root);
 			//register these events so we can tell when things are added/removed (eg: discovery)
-			_objectManager .InterfacesAdded += (p, i) => {
-				System.Console.WriteLine ("Discovered "+p);
-			};
-			_objectManager .InterfacesRemoved += (p, i) => {
-				System.Console.WriteLine ("Lost" + p);
-			};
+			//_objectManager .InterfacesAdded += (p, i) => {
+				//System.Console.WriteLine ("Discovered "+p);
+			//};
+			//_objectManager .InterfacesRemoved += (p, i) => {
+				//System.Console.WriteLine ("Lost" + p);
+			//};
 
 			//get the agent manager so we can register our agent
 			_agentManager = _connection.System.GetObject<AgentManager1> (BlueZPath.Service, BlueZPath.Root);
