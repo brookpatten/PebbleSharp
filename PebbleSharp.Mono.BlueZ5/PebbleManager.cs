@@ -141,25 +141,36 @@ namespace PebbleSharp.Mono.BlueZ5
 							if (name.StartsWith ("Pebble"))
 							{
 								var device = _connection.System.GetObject<Device1> (BlueZPath.Service, obj);
-
-								try
+								//we also check for the UUID because that's how we tell the 
+								//LE address from the regular address
+								try 
 								{
-									//System.Console.WriteLine("Attempting connection to " + obj);
-									if (!device.Paired)
+									if (device.UUIDs.Contains (PebbleSerialUUID)) 
 									{
-										device.Pair ();
+										try 
+										{
+											System.Console.WriteLine ("Attempting connection to " + obj);
+											if (!device.Paired) 
+											{
+												device.Pair ();
+											}
+											if (!device.Trusted) 
+											{
+												device.Trusted = true;
+											}
+											_pebbles [obj] = new DiscoveredPebble () { Name = name, Device = device };
+											device.ConnectProfile (PebbleSerialUUID);
+										} 
+										catch (Exception ex) 
+										{
+											System.Console.WriteLine ("Failed to connect to " + obj + " " + ex.Message);
+											//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
+										}
 									}
-									if (!device.Trusted)
-									{
-										device.Trusted = true;
-									}
-									_pebbles [obj] = new DiscoveredPebble (){ Name = name, Device = device };
-									device.ConnectProfile (PebbleSerialUUID);
 								} 
-								catch (Exception ex)
+								catch (Exception ex) 
 								{
-									System.Console.WriteLine("Failed to connect to "+obj+" "+ex.Message);
-									//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
+									//failed to enumerate UUIDS, safely assume it's not a pebble
 								}
 							}
 						}
