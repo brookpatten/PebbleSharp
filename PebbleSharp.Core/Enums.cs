@@ -227,7 +227,7 @@ namespace PebbleSharp.Core
 		public static Platform GetPlatform(this Hardware hardware)
 		{
 			Initialize();
-			return Platforms[hardware];
+ 			return Platforms[hardware];
 		}
 	}
 }

@@ -43,7 +43,7 @@ namespace PebbleSharp.Mono.BlueZ5
 			_connection = connection;
 		}
 
-		public IList<Pebble> Detect(string adapterName,bool doDiscovery)
+		public IList<Pebble> Detect(string adapterName,bool doDiscovery,bool pairDiscovered,bool unpairFailed)
 		{
 			//these properties are defined by bluez in /doc/profile-api.txt
 			//but it turns out the defaults work just fine
@@ -138,39 +138,62 @@ namespace PebbleSharp.Mono.BlueZ5
 						if (managedObject [typeof(Device1).DBusInterfaceName ()].ContainsKey ("Name"))
 						{
 							var name = (string)managedObject [typeof(Device1).DBusInterfaceName ()] ["Name"];
-							if (name.StartsWith ("Pebble"))
+							if (name.StartsWith ("Pebble") && !name.Contains(" LE "))
 							{
 								var device = _connection.System.GetObject<Device1> (BlueZPath.Service, obj);
 								//we also check for the UUID because that's how we tell the 
 								//LE address from the regular address
+
 								try 
 								{
-									if (device.UUIDs.Contains (PebbleSerialUUID)) 
+									System.Console.WriteLine ("Attempting connection to " + obj);
+									if (!device.Paired && pairDiscovered) 
 									{
-										try 
-										{
-											System.Console.WriteLine ("Attempting connection to " + obj);
-											if (!device.Paired) 
-											{
+										device.Pair ();
+									}
+									if (!device.Trusted && pairDiscovered) 
+									{
+										device.Trusted = true;
+									}
+									_pebbles [obj] = new DiscoveredPebble () { Name = name, Device = device };
+
+									try 
+									{
+										device.ConnectProfile (PebbleSerialUUID);
+									} 
+									catch (Exception ex) 
+									{
+										if (unpairFailed) {
+											//this prevents us from falling into a failing loop
+											//if the pebble has unpaired but bluez has not
+
+											System.Console.WriteLine ("Failed to connect to " + obj + ", attempting to re-pair");
+											//if we can't connect then try to re-pair then reconnect
+											_adapter.RemoveDevice (obj);
+
+											if (pairDiscovered) {
+												//re-discover
+												if (!_adapter.Discovering) {
+													_adapter.StartDiscovery ();
+												}
+												System.Threading.Thread.Sleep (10000);
+												//re-pair
 												device.Pair ();
-											}
-											if (!device.Trusted) 
-											{
 												device.Trusted = true;
+												//re-connect
+												device.ConnectProfile (PebbleSerialUUID);
 											}
-											_pebbles [obj] = new DiscoveredPebble () { Name = name, Device = device };
-											device.ConnectProfile (PebbleSerialUUID);
 										} 
-										catch (Exception ex) 
+										else 
 										{
-											System.Console.WriteLine ("Failed to connect to " + obj + " " + ex.Message);
-											//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
+											throw;
 										}
 									}
 								} 
 								catch (Exception ex) 
 								{
-									//failed to enumerate UUIDS, safely assume it's not a pebble
+									System.Console.WriteLine ("Failed to connect to " + obj + " " + ex.Message);
+									//we don't need to do anything, it simply won't be added to the collection if we can't connect to it
 								}
 							}
 						}
