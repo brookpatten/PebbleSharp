@@ -33,7 +33,7 @@ namespace PebbleCmd
 				var manager = new PebbleManager();
                 Console.WriteLine("PebbleCmd");
                 Console.WriteLine("Discovering and Pairing Pebbles");
-				var pebbles = manager.Detect("hci1",true);
+				var pebbles = manager.Detect("hci1",true,true,true);
 				Console.WriteLine("Select Pebble to connect to:");
                 if (pebbles != null && pebbles.Any())
                 {
