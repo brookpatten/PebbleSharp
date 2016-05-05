@@ -21,6 +21,12 @@ namespace PebbleSharp.Mono.BlueZ5
 			//_deviceInfo = deviceInfo;
 		}
 
+		public void Reconnect (Stream stream)
+		{
+			_networkStream = stream;
+			OpenAsync ().Wait ();
+		}
+
 		~PebbleBluetoothConnection()
 		{
 			Dispose( false );

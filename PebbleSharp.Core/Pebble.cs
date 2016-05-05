@@ -67,7 +67,9 @@ namespace PebbleSharp.Core
             get { return _PebbleProt.Connection; }
         }
 
-        public bool IsAlive { get; private set; }
+		public abstract void Reconnect ();
+
+        public bool IsAlive { get; protected set; }
 
         public TimeSpan ResponseTimeout { get; set; }
 
@@ -271,7 +273,7 @@ namespace PebbleSharp.Core
         public async Task<T> SendMessageAsync<T>( Endpoint endpoint, byte[] payload )
             where T : class, IResponse, new()
         {
-            return await Task.Run( () =>
+            var task = Task.Run( () =>
                                       {
                                           try
                                           {
@@ -291,15 +293,17 @@ namespace PebbleSharp.Core
                                               var result = new T();
                                               result.SetError( "TimeoutException occurred" );
                                               Disconnect();
-                                              return result;
+											  return result;
                                           }
                                           catch ( Exception e )
                                           {
                                               var result = new T();
                                               result.SetError( e.Message );
+											  Disconnect ();
                                               return result;
                                           }
                                       } );
+			return await task;
         }
 
         public Task SendMessageNoResponseAsync( Endpoint endpoint, byte[] payload )

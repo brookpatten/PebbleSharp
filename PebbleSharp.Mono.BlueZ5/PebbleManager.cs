@@ -18,7 +18,7 @@ namespace PebbleSharp.Mono.BlueZ5
     {
 		private readonly ObjectPath AgentPath = new ObjectPath ("/agent");
 		private readonly ObjectPath ProfilePath = new ObjectPath ("/profiles");
-		const string PebbleSerialUUID = "00000000-deca-fade-deca-deafdecacaff";
+		public const string PebbleSerialUUID = "00000000-deca-fade-deca-deafdecacaff";
 
 		private ObjectManager _objectManager;
 		private ProfileManager1 _profileManager;
@@ -62,17 +62,36 @@ namespace PebbleSharp.Mono.BlueZ5
 			//create and register our profile
 			_profile = new PebbleProfile ();
 			_connection.System.Register (ProfilePath, _profile);
-			_profileManager.RegisterProfile (ProfilePath
-				, PebbleSerialUUID
-				, properties);
+			_profileManager.RegisterProfile (ProfilePath, PebbleSerialUUID, properties);
 			_profile.NewConnectionAction=(path,fd,props)=>{
-				//System.Console.WriteLine("Connected to " + path);
-				_pebbles[path].FileDescriptor = fd;
-				_pebbles[path].FileDescriptor.SetBlocking();
-				var stream = _pebbles[path].FileDescriptor.OpenAsStream(true);
-				_pebbles[path].Stream=stream;
-				var blueZPebble = new BlueZ5Pebble(new PebbleBluetoothConnection(stream),_pebbles[path].Name);
-				_pebbles[path].Pebble = blueZPebble;
+				if (_pebbles [path].Pebble == null) 
+				{
+					//new connection
+					//System.Console.WriteLine("Connected to " + path);
+					_pebbles [path].FileDescriptor = fd;
+					_pebbles [path].FileDescriptor.SetBlocking ();
+					var stream = _pebbles [path].FileDescriptor.OpenAsStream (true);
+					_pebbles [path].Stream = stream;
+					var blueZPebble = new BlueZ5Pebble (new PebbleBluetoothConnection (stream),_pebbles[path].Device, _pebbles [path].Name);
+					_pebbles [path].Pebble = blueZPebble;
+				} 
+				else 
+				{
+					//reconnect
+					//if the descriptor is new, close the old one and replace it
+					if (fd.FD != _pebbles [path].FileDescriptor.FD) {
+						//dispose of the old fd
+						_pebbles [path].FileDescriptor.Close ();
+						_pebbles [path].FileDescriptor.Dispose ();
+
+						//setup the new fd
+						_pebbles [path].FileDescriptor = fd;
+						_pebbles [path].FileDescriptor.SetBlocking ();
+						var stream = _pebbles [path].FileDescriptor.OpenAsStream (true);
+						_pebbles [path].Stream = stream;
+					}
+					((PebbleBluetoothConnection)_pebbles [path].Pebble.Connection).Reconnect (_pebbles [path].Stream);
+				}
 			};
 
 			//get a copy of the object manager so we can browse the "tree" of bluetooth items
