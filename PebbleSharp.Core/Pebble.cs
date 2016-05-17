@@ -95,8 +95,9 @@ namespace PebbleSharp.Core
                 IsAlive = true;
 
 				//get the firmware details, we'll need to know the platform and version for possible future actions
-				var firmwareResponse = await this.GetFirmwareVersionAsync();
-				this.Firmware = firmwareResponse.Firmware;
+				var firmwareResponse = this.GetFirmwareVersionAsync();
+				firmwareResponse.Wait ();
+				this.Firmware = firmwareResponse.Result.Firmware;
             }
             else
             {
